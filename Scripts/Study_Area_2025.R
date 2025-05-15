@@ -55,21 +55,8 @@ estuaries.pnw <- st_shift_longitude(estuaries)
 pnw <- st_crop(PBHJV, st_bbox(estuaries.pnw))
 
 #save product
-saveRDS(estuaries.pnw, "Data/Shapefiles/estuaries.rds")
-saveRDS(pnw, "Data/Shapefiles/PNW_shapefile.rds")
-
-#subset out 4 estuaries for data testing
-
-#BC: fraser river estuary - 391, bella coola estuary - 328")
-#USA: columbia river estuary - 270, garcia river estuary - 131
-
-sub1 <- BC.estuaries[c(328, 391),]
-sub2 <- USA.estuaries[c(131, 270),]
-
-estuaries.subset <- rbind(sub1, sub2)
-
-#save product
-saveRDS(estuaries.subset, "Data/Shapefiles/estuary_subset.rds")
+#saveRDS(estuaries.pnw, "Data/estuaries.rds")
+#saveRDS(pnw, "Data/PNW_shapefile.rds")
 
 #plot single estuaries from each region------
 
