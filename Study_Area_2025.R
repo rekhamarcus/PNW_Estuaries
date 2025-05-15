@@ -13,19 +13,19 @@ library(basemapR) #for basemaps ???
 setwd("C:/Users/rekha/OneDrive - University of Victoria/Wetlands")
 
 #import study area shapefile
-PBHJV <- read_sf("Data/PBHJV_shapefiles/Continental_PBHJV.shp")
+PBHJV <- read_sf("Data/Shapefiles/PBHJV_shapefiles/Continental_PBHJV.shp")
 
 #reproject to North America Albers
 PBHJV <- st_transform(PBHJV, crs = st_crs("ESRI:102008"))
 
 #wrangle estuaries into single shapefile----
 #import BC estuary data
-BC.estuaries <- read_sf("Data/BC_Estuary_shp/PECP_EstuaryPolygons_2018Update_16Jan2020.shp")
+BC.estuaries <- read_sf("Data/Shapefiles/BC_Estuary_shp/PECP_EstuaryPolygons_2018Update_16Jan2020.shp")
 
 #plot(BC.estuaries$geometry)
 
 #import WA,OR,CA estuary data - obtained at https://www.pacificfishhabitat.org/data/
-USA.estuaries <- read_sf("Data/PMEP_West_Coast_Estuary_Extent/PMEP_West_Coast_USA_Estuary_Extent_V1.gdb")
+USA.estuaries <- read_sf("Data/Shapefiles/PMEP_West_Coast_Estuary_Extent/PMEP_West_Coast_USA_Estuary_Extent_V1.gdb")
   
 #merge all into single dataset
 
@@ -49,6 +49,7 @@ estuaries <- rbind(USA.estuaries, BC.estuaries)
 
 #crop estuaries to study area
 estuaries.pnw <- st_crop(estuaries, st_bbox(PBHJV))
+estuaries.pnw <- st_shift_longitude(estuaries)
 
 #crop study area to estuary area
 pnw <- st_crop(PBHJV, st_bbox(estuaries.pnw))
