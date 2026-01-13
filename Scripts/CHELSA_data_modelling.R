@@ -177,7 +177,7 @@ results.ukesm <- readRDS('Data/Results/Results_ukesm_model/results_ukesm.rds')
 results <- rbind(results.gfdl, results.ipfl, results.mpi, results.mri, results.ukesm)
 saveRDS(results, "Data/Results/results.rds")
 
-#fix incorrect year markers bruh OUTDATED ---------------------------------------------------
+#fix incorrect year markers bruh ---------------------------------------------------
 
 results.8.5 <- results[results$SSP == "SSP5_8.5",]
 results.8.5 <- results.8.5[!results.8.5$model == "gfdl",]
@@ -191,11 +191,9 @@ results.else <- results.else[!results.else$model == "gfdl",]
 
 results <- rbind(results.8.5, results.gfdl, results.else)
 
-results$years <- case_when(
-  results$years == "2011-2040" ~ "2011_2040",
-  results$years == "2041-2070" ~ "2041_2070",
-  results$years == "2071-2100" ~ "2071_2100",
-)
+results$years[results$years == "2011-2040"] <- "2011_2040"
+results$years[results$years == "2041-2070"] <- "2041_2070"
+results$years[results$years == "2071-2100"] <- "2071_2100"
 
 saveRDS(results, "Data/Results/results.rds")
 
