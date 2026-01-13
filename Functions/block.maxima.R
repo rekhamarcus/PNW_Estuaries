@@ -1,6 +1,6 @@
 #function to extract block maxima from temperature and precipitation data
 
-block.maxima <- function(temp = tas.fre, precip = pr.fre){
+block.maxima <- function(temp = tas.estuary, precip = pr.estuary){
   
   #extract min/mas of temperatures
   t <- as.data.frame(minmax(temp))
@@ -24,6 +24,9 @@ block.maxima <- function(temp = tas.fre, precip = pr.fre){
     summarise(tasmin = (min(value)/10) - 273.15)
   
   #extract  min/max of precipitation
+  test <- as.data.frame(precip, xy = TRUE) %>%
+    pivot_longer(cols = c(3:488))
+  
   p <- as.data.frame(minmax(precip))
   minp <- p[1,]
   maxp <- p[2,]
@@ -33,16 +36,16 @@ block.maxima <- function(temp = tas.fre, precip = pr.fre){
                    start = nchar(w$name) - nchar('yyyy_V.2.1') + 1,
                    stop = nchar(w$name) - nchar('_V.2.1'))
   
-  pr.max <- group_by(w, year) %>%
-    summarise(prmax = max(value)/100)
+  pr.min <- group_by(w, year) %>%
+    summarise(prmin = min(value)/100)
   
   z <- pivot_longer(maxp, cols = c(1:486))
   z$year <- substr(z$name,
                    start = nchar(z$name) - nchar('yyyy_V.2.1') + 1,
                    stop = nchar(z$name) - nchar('_V.2.1'))
   
-  pr.min <- group_by(z, year) %>%
-    summarise(prmin = min(value)/100)
+  pr.max <- group_by(z, year) %>%
+    summarise(prmax = max(value)/100)
   
   #join all data together
   extremes <- right_join(tas.min, tas.max)

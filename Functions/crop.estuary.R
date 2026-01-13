@@ -6,7 +6,12 @@ crop.estuary <- function(files = pr.2002, shape = fre) {
   
   for(i in 1:length(files)) {
     
-    r <- rast(files[i])
+    possibleError <- tryCatch( #some files missing data
+      r <- rast(files[i]),
+      error=function(e) e)
+    
+    if(inherits(possibleError, "error")) next
+      
     c <- crop(r, shape)
     c <- mask(c, shape)
     
@@ -14,6 +19,10 @@ crop.estuary <- function(files = pr.2002, shape = fre) {
     
   }
   
+  #remove files with no data
+  SUB <- SUB[format(SUB) == "<S4 class ‘SpatRaster’ [package “terra”] with 1 slot>"]
+  
   rast(SUB)
+  
   
 }
