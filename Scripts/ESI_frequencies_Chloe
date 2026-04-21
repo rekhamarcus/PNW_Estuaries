@@ -1,0 +1,167 @@
+library(terra)
+library(dplyr)
+library(sf) 
+library(tidyverse)
+library(ncdf4)
+library(ncdfCF)
+library(magrittr)
+install.packages("rgdal")
+library(rgdal)
+install.packages("raster")
+library(raster)
+
+#use dplyr::pivot_wider() to expand estuaries that have multiple shoretypes
+#will convert from two rows of same estuary to one row with multiple shoretypes
+#if you need help determining length of string data (for percentage/dominant shoretype), then ask Diana
+#Test code on subsets
+
+
+
+#Bring in separated ESI types file
+PNW_separated <- readRDS("PNW_separated.rds")
+
+#Bring in estuaries file
+estuaries <- readRDS("estuaries 1.rds")
+
+
+#bring in list_ESI
+list_ESI <- readRDS("list_ESI.rds")
+list_ESI
+
+#Intersect ESI shoretypes and estuaries
+
+estuaries <- estuaries%>%
+  rename(ID = EST_ID)
+
+    
+
+PNW_separated <- PNW_separated %>%
+  dplyr::select(-ENVIR)
+
+PNW_separated <- PNW_separated%>%
+  rename(Area_Ha = Shape_Length,
+         geometry = Shape)
+
+#subsets created to practice for loop on 
+PNW_separated_subset <- PNW_separated[c(1:10), c(1:3)]
+estuaries_subset <- estuaries[c(1:10), c(1:3)]
+
+
+
+#For loop
+list_estuaries_ESItypes <- list()
+
+for (i in 1:nrow(estuaries)) {
+  
+  estuaries_ESItypes_df <- data.frame(EST_ID = estuaries$ID[i],
+                                      Area_HA = estuaries$Area_Ha[i],
+                                      "8A" = NA,
+                                      "8D" = NA,
+                                      "6B" = NA, 
+                                      "5" = NA,
+                                      "9A" = NA,
+                                      "3A" = NA,
+                                      "10A" = NA,
+                                      "2A" = NA,
+                                      "8B" = NA,
+                                      "8C" = NA,
+                                      "1A" = NA,
+                                      "1C" = NA,
+                                      "4" = NA,
+                                      "7" = NA,
+                                      "6A" = NA,
+                                      "10B" = NA,
+                                      "6C" = NA,
+                                      "9B" = NA, 
+                                      "[[19]]" = NA,
+                                      "1B" = NA,
+                                      "U" = NA,
+                                      "10C" = NA,
+                                      "10D" = NA)
+  
+  #create bbox from rast() function, create raster from bbox coordinates
+  #0.01 resolution
+  #For specifying extent = bbox(estuaries[i])
+  #vals = est$ID[i]
+  #crop and mask bbox raster to estuary[i]
+  #take area
+  
+  bbox <- st_bbox(estuaries[i,])
+  r <- rast(xmin = bbox[1], xmax = bbox[3], ymin = bbox[2], ymax = bbox[4], crs = "EPSG:4326", res = 0.01, vals = 1)
+  r <- crop(r, estuaries[i,])
+  r <- mask(r, estuaries[i,])
+  
+   for(j in 1:20){
+   #R <- shp2raster(estuaries[i,],value = estuaries$ID[i])
+     #intersect <- terra::intersect(estuaries[i,], list_ESI[[j]])
+     
+     #sf <- st_as_sf(list_ESI[[j]], sf_column_name = "geometry")
+     
+     linestring <- st_cast(list_ESI[[j]], "LINESTRING")
+     
+     possibleError <- tryCatch(
+       c <- crop(r, linestring),
+     error = function(e) e)
+     
+     if(inherits(possibleError, "error")) next
+     
+     #crop and mask again to list_esi 
+     
+     e <- terra::extract(c, linestring)
+     
+     estuaries_ESItypes_df[i, j+2] <- sum(e$lyr.1, na.rm = TRUE)
+     
+     #m <- terra::mask(r, sf)
+     #estuaries_ESItypes_df[i, j+2] <- expanse(m)[2] #this number is in m^2
+    
+   }
+  
+  for(j in 21:length(list_ESI)){
+    #R <- shp2raster(estuaries[i,],value = estuaries$ID[i])
+    #intersect <- terra::intersect(estuaries[i,], list_ESI[[j]])
+    
+    #sf <- st_as_sf(list_ESI[[j]], sf_column_name = "geometry")
+    
+    linestring <- st_cast(list_ESI[[j]], "POLYGON")
+    
+    possibleError <- tryCatch(
+      c <- crop(r, linestring),
+      error = function(e) e)
+    
+    if(inherits(possibleError, "error")) next
+    
+    #crop and mask again to list_esi 
+    
+    e <- terra::extract(c, linestring)
+    
+    estuaries_ESItypes_df[i, j+2] <- sum(e$lyr.1, na.rm = TRUE)
+    
+    #m <- terra::mask(r, sf)
+    #estuaries_ESItypes_df[i, j+2] <- expanse(m)[2] #this number is in m^2
+    
+  }
+
+  
+  list_estuaries_ESItypes[[i]] <- estuaries_ESItypes_df
+  
+}
+
+estuaries.esi <- do.call(rbind, list_estuaries_ESItypes)
+
+
+bbox(c(xmin = 16.1, xmax = 16.6, ymax = 48.6, ymin = 47.9))
+st_bbox(c(xmin = (estuaries[i,3]), xmax = (estuaries[i,3]), ymin = (estuaries[i,3]), ymax = (estuaries[i,3])), crs = st_crs(4326))
+estuaries2 <- st_as_sf(estuaries)
+
+#She wants to work, I can feel it
+#Won't run because error message "no applicable method for 'st_bbox' applied to an object of class "list" " comes up
+bbox_pleeease <- st_bbox(c(xmin = (estuaries_2[i, ]), xmax = (estuaries_2[i, ]), ymin = (estuaries_2[i, ]), ymax = (estuaries_2[i, ])), crs = st_crs(4326), res(0.01, 0.01))
+
+
+#so using rast() function on estuaries and then cropping it to a bbox with the exact same extent worked, but not giving us individual estuaries
+bboxy <- st_bbox((c(xmin = -133.130120075859, xmax = -121.937071717489, ymin = 38.7578990718796, ymax = 55.9376038918338)), crs = st_crs(4326))
+esty_rasty <- rast(estuaries)
+cropped_queen <- crop(esty_rasty, bboxy)
+plot(cropped_queen)
+
+bboxy_pt2 <- crop(estuaries[i, ], bboxy)

@@ -11,6 +11,7 @@ library(ggspatial)
 library(gdalUtilities)
 
 setwd("C:/Users/rekha/OneDrive - University of Victoria/Wetlands")
+source("PNW_Estuaries/Functions/colors.R") #color palettes
 
 #import study area shapefile
 PBHJV <- read_sf("Data/Shapefiles/PBHJV_shapefiles/Continental_PBHJV.shp")
@@ -169,7 +170,8 @@ ggsave("Figures/USA_estuary3.png",
 
 #plot estuaries shapefile-----
 
-estuaries <- readRDS("Data/estuaries.rds")
+estuaries <- readRDS("Data/Shapefiles/estuaries.rds")
+pnw <- readRDS("Data/Shapefiles/PNW_shapefile.rds")
 
 ggplot() +
   coord_sf(datum = "ESRI:102008") +
@@ -204,6 +206,68 @@ ggplot() +
 ggsave("estuaries_points.png", 
        width = 6,
        height = 12,
+       dpi = 600)
+
+#add in sub-regions
+
+SWBC <- readRDS("Data/Shapefiles/Regions/southwestern_BC.rds")
+NWVI <- readRDS("Data/Shapefiles/Regions/northwest_VI.rds")
+NCM <- readRDS("Data/Shapefiles/Regions/northcentral_BC.rds")
+HG <- readRDS("Data/Shapefiles/Regions/haida_gwaii.rds")
+SS <- readRDS("Data/Shapefiles/Regions/salish_sea.rds")
+WONC <- readRDS("Data/Shapefiles/Regions/WA_OR_northernCA.rds")
+CC <- readRDS("Data/Shapefiles/Regions/central_CA.rds")
+
+SWBC <- estuaries[estuaries$EST_ID %in% SWBC$EST_NO,]
+NWVI <- estuaries[estuaries$EST_ID %in% NWVI$EST_NO,]
+NCM <- estuaries[estuaries$EST_ID %in% NCM$EST_NO,]
+HG <- estuaries[estuaries$EST_ID %in% HG$EST_NO,]
+SS <- estuaries[estuaries$EST_ID %in% SS$PMEP_EstuaryID,]
+WONC <- estuaries[estuaries$EST_ID %in% WONC$PMEP_EstuaryID,]
+CC <- estuaries[estuaries$EST_ID %in% CC$PMEP_EstuaryID,]
+
+#add in regions to results dataset
+SWBC$region <- "SWBC"
+NWVI$region <- "NWVI"
+NCM$region <- "NCM"
+HG$region <- "HG"
+SS$region <- "SS"
+WONC$region <- "WONC"
+CC$region <- "CC"
+
+#save all results in single file
+estuaries.region.points <- rbind(NCM, HG, NWVI, SWBC, SS, WONC, CC) %>%
+  st_centroid()
+
+#plot estuaries with different colors for sub-regions
+
+labels <- rev(c("North Central BC", "Haida Gwaii", "Northwest Vancouver Island", "Southwest BC", "Salish Sea", "WA, OR, Northern CA", "Central California"))
+
+ggplot() +
+  coord_sf(datum = "ESRI:102008") +
+  annotation_map_tile(type = "hotstyle", zoomin = 1) +
+  #geom_sf(data = pnw, fill = NA, color = 'black') + 
+  geom_sf(data = estuaries.region.points, aes(colour = region, fill = region), size = 0.5, shape = 23) + 
+  #scale_colour_discrete(name = " Region", limits = rev(c("NCM", "HG", "NWVI", "SWBC", "SS", "WONC", "CC")), labels = labels) +
+  #scale_fill_discrete(name = " Region", limits = rev(c("NCM", "HG", "NWVI", "SWBC", "SS", "WONC", "CC")), labels = labels) +
+  scale_colour_manual(name = " Region", limits = rev(c("NCM", "HG", "NWVI", "SWBC", "SS", "WONC", "CC")), labels = labels, values = colors7) +
+  scale_fill_manual(name = " Region", limits = rev(c("NCM", "HG", "NWVI", "SWBC", "SS", "WONC", "CC")), labels = labels, values = colors7) + 
+  #guides(colour = guide_legend(nrow = 4)) + 
+  theme_void() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(), 
+        legend.position = "inside",
+        legend.position.inside = c(0.35, 0.15),
+        legend.text = element_text(size = 7, family = "sans"),
+        legend.title = element_text(size = 9, family = "sans"), 
+        legend.key.size = unit(0.5, "cm"),
+        legend.background = element_rect(fill = "white", colour = "white"))
+
+ggsave("Figures/estuary.region.points.png",
+       width = 3.05,
+       height = 7.86,
        dpi = 600)
 
 

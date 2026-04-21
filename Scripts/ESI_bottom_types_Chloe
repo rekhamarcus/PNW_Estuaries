@@ -1,0 +1,53 @@
+#This script is for subsetting the PNW ESI into specific categories of bottom type, for further risk analysis
+
+#Packages
+library(sf)
+library(terra)
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+library(ncdf4)
+library(ncdfCF)
+library(tidyr)
+
+#Bring in PNW ESI files
+PNW_ESI <- readRDS("PNW_ESI.rds")
+#PNW_ESI_cast <- st_cast(PNW_ESI, "POLYGON")
+readRDS("PNW_ESI_rast.rds")
+
+#Right now, there are observations with multiple ESI rankings contained in the dataset
+#The following code is to separate duplicate rankings so each observation only contains 1 ESI ranking
+#This means more observations, but it will improve readability by keeping categories to one ESI value instead of having extra categories for split values
+
+#Separate duplicate categories into seperate categories and separate lines
+PNW_separated <- separate_longer_delim(PNW_ESI, ESI, delim = "/")
+PNW_separated <- st_as_sf(PNW_separated, sf_column_name = "Shape")
+#Now you have a separated ESI values dataframe
+saveRDS(PNW_separated, file = "PNW_separated.rds")
+
+
+#Very basic template for the "for loops" function
+for (i in 1:8) {
+  print(i)
+}
+
+#Code to run for loop to seperate ESI values
+#This will do the exact same thing the above code does, but much more efficiently
+#Have done both atm for learning purposes because I am an academic, multidisciplinary R queen
+list_ESI <- list()
+for(i in unique(PNW_separated$ESI)) {
+  list_ESI[[i]] <- filter(PNW_separated, ESI == i) 
+}
+
+saveRDS(list_ESI, file = "list_ESI.rds")
+
+#If Rekha wants dataframes with the OG duplicate values (e.g. 1A/1B), then run following code to retrieve them
+#unique(PNW_ESI_reproj$ESI)
+
+#For loop code to extract all categories from original "PNW_ESI_reproj" set, just to have on hand
+list_ESI_reproj <- NULL
+for(i in unique(PNW_ESI_reproj$ESI)) {
+  list_ESI_reproj[[i]] <- filter(PNW_ESI_reproj, ESI == i) 
+}
+
+saveRDS(list_ESI, file = "list_ESI.rds")

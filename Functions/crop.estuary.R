@@ -19,8 +19,8 @@ crop.estuary <- function(files = pr.2002, shape = fre) {
     
   }
   
-  #remove files with no data
-  SUB <- SUB[format(SUB) == "<S4 class ‘SpatRaster’ [package “terra”] with 1 slot>"]
+  #remove files with no data - thsi was removing all files, something was weird
+  #SUB <- SUB[format(SUB) == "<S4 class ‘SpatRaster’ [package “terra”] with 1 slot>"]
   
   rast(SUB)
   
