@@ -7,7 +7,7 @@ library('extRemes') #for modelling extreme events
 library('data.table') #for matrix.futures function
 library('tidyr') #for pivot_longer function
 
-setwd("C:/Users/rekhamarcus/OneDrive - University of Victoria/Wetlands")
+setwd("C:/Users/rekha/OneDrive - University of Victoria/Wetlands")
 
 #load in functions for analysis
 source("PNW_Estuaries/Functions/block.maxima.R") #function to extract block maxima from historical data
@@ -122,6 +122,27 @@ print (i)
 
 results <- do.call(rbind, RESULTS)
 
+#calculate values for entire region ---------------------------------------------
+
+tas <- list.files('Data/Temperature/CHELSA_monthly_timeseries_historical', pattern = ".tif", full.names = T) %>% rast()
+tas.proj <- list.files('Data/Temperature/CHELSA_ukesm1-0-ll_projections/monthly_projections', pattern = ".tif", full.names = T) %>% rast()
+bio4 <- list.files('Data/Temperature/CHELSA_ukesm1-0-ll_projections/seasonality_projections', pattern = ".tif", full.names = T) %>% rast()
+
+pr <- list.files('Data/Precipitation/CHELSA_monthly_timeseries_historical', pattern = ".tif", full.names = T) %>% rast()
+pr.proj <- list.files('Data/Precipitation/CHELSA_ukesm1-0-ll_projections/monthly_projections', pattern = ".tif", full.names = T) %>% rast()
+bio15 <- list.files('Data/Precipitation/CHELSA_ukesm1-0-ll_projections/seasonality_projections', pattern = ".tif", full.names = T) %>% rast()
+
+extremes <- block.maxima(temp = tas, pr = pr)    
+
+#wrangle future data into matrix
+
+pr.results <- matrix.futures.pr(hist = pr, sd = bio15, proj = pr.proj)
+tas.results <- matrix.futures.temp.K(hist = tas, sd = bio4, proj = tas.proj)
+
+prmax.extremes <- extremes.max(data = extremes, var = extremes$prmax, results = pr.results, var.name = "pra_max")
+tasmax.extremes <- extremes.max(data = extremes, var = extremes$tasmax, results = tas.results, var.name = "tas_max")
+
+
 #wrangle datasets for analysis --------------------------------------
 
 results <- results[,c(20, 1:19)]
@@ -197,29 +218,4 @@ results$years[results$years == "2071-2100"] <- "2071_2100"
 
 saveRDS(results, "Data/Results/results.rds")
 
-#fix fuckass list formatting wtf - OUTDATED -----------------------------------------
-
-results$mean.pr <- as.data.frame(unlist(results$mean.pr))
-results$SD.pr <- as.data.frame(unlist(results$SD.pr))
-results$ES0.95.pr <- as.data.frame(unlist(results$ES0.95.pr))
-results$ES0.99.pr <- as.data.frame(unlist(results$ES0.99.pr))
-results$RP20.prmax <- as.data.frame(unlist(results$RP20.prmax))
-results$RP100.prmax <- as.data.frame(unlist(results$RP100.prmax))
-results$mean.tas <- as.data.frame(unlist(results$mean.tas))
-results$SD.tas <- as.data.frame(unlist(results$SD.tas))
-results$ES0.95.tas <- as.data.frame(unlist(results$ES0.95.tas))
-results$ES0.99.tas <- as.data.frame(unlist(results$ES0.99.tas))
-results$RP20.tasmax <- as.data.frame(unlist(results$RP20.tasmax))
-results$RP100.tasmin <- as.data.frame(unlist(results$RP100.tasmin))
-results$RP100.tasmax <- as.data.frame(unlist(results$RP100.tasmax))
-results$ES0.05.tas <- as.data.frame(unlist(results$ES0.05.tas))
-results$ES0.01.tas <- as.data.frame(unlist(results$ES0.01.tas))
-results$RP20.tasmin <- as.data.frame(unlist(results$RP20.tasmin))
-results$drought <- as.data.frame(unlist(results$drought))
-
-results <- do.call(cbind, results)
-
-names(results)[4:20] <- c("mean.pr", "SD.pr", "ES0.95", "ES0.99.pr", "RP20.prmax", "RP100.prmax",
-                          "mean.tas", "SD.tas", "ES0.95.tas", "ES0.99.tas", "RP20.tasmax", "RP100.tasmax",
-                          "drought", "ES0.05.tas", "ES0.01.tas", "RP20.tasmin", "RP100.tasmin")
 

@@ -8,6 +8,10 @@ setwd('C:/Users/rekhamarcus/OneDrive - University of Victoria/Wetlands/')
 
 r <- readRDS('Data/Results/results.rds')
 
+r2041 <- results[(results$years == "2041_2070"),] #only results for mid century
+r2041.SSP1 <- r2041[r2041$SSP == "SSP1_2.6",]
+r2041.SSP5 <- r2041[r2041$SSP == "SSP5_8.5",]
+
 estuaries <- unique(r$EST_ID)
 
 SUM <- list()
@@ -15,7 +19,7 @@ SUM <- list()
 for(i in 1:length(estuaries)){
   
   #extract estuary
-  e <- r[r$EST_ID == estuaries[i],]
+  e <- r2041.SSP5[r2041.SSP5$EST_ID == estuaries[i],]
   
   #set up dataframe 
   df <- data.frame(EST_ID = estuaries[i],
@@ -67,7 +71,7 @@ for(i in 1:length(estuaries)){
   
 }
 
-results.summary <- do.call(rbind, SUM)
+results.summary.2041.SSP5 <- do.call(rbind, SUM)
 
-saveRDS(results.summary, "Data/Results/results_summary.rds")
-write.csv(results.summary, "Data/Results/results_summary.csv")
+saveRDS(results.summary.2041.SSP5, "Data/Results/results_summary_2041_SSP5.rds")
+write.csv(results.summary.2041.SSP5, "Data/Results/results_summary_2041_SSP5.csv")

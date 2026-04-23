@@ -449,3 +449,43 @@ pr.years.plot <- ggplot(var.pr, aes(fill = SSP, x = years, y = mean.pr)) +
         legend.position = "inside",
         legend.position.inside = c(0.15, 0.85))
 
+
+#calculate some specific values for results ------------------------------------
+
+#import historical data summary rasters
+
+tas <- list.files('Data/Temperature/CHELSA_climate_normals', pattern = ".tif", full.names = T) %>% rast()
+pr <- list.files('Data/Precipitation/CHELSA_climate_normals', pattern = ".tif", full.names = T) %>% rast()
+
+mean(global(tas, fun = "mean", na.rm = TRUE)$mean) #10.423
+mean(global(pr, fun = "mean", na.rm = TRUE)$mean) #173.107
+
+mean(global(tas, fun = "sd", na.rm = TRUE)$sd) #1.813
+mean(global(pr, fun = "sd", na.rm = TRUE)$sd) #79.974
+
+#crop to specific estuaries
+
+esp <- c(211, 188, 3030, 1152, 1014, 181)
+esp.est <- estuaries[estuaries$EST_ID %in% esp,]
+
+ests <- data.frame(EST_ID = NA,
+                   meantas = NA, 
+                   meanpr = NA, 
+                   sdtas = NA,
+                   sdpr = NA)
+
+for(i in 1:nrow(esp.est)){
+  
+  t <- crop(tas, esp.est[i,])
+  p <- crop(pr, esp.est[i,])
+  
+  ests[i,1] <- esp.est$EST_ID[i]
+  
+  ests[i,2] <- mean(global(t, fun = "mean", na.rm = TRUE)$mean) 
+  ests[i,3] <- mean(global(p, fun = "mean", na.rm = TRUE)$mean) 
+  
+  ests[i,4] <- mean(global(t, fun = "sd", na.rm = TRUE)$sd) 
+  ests[i,5] <- mean(global(p, fun = "sd", na.rm = TRUE)$sd) 
+  
+}
+
