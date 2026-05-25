@@ -8,7 +8,7 @@ library(tidyr)
 library(stringr)
 library(ggplot2)
 
-setwd("C:/Users/rekha/OneDrive - University of Victoria/Wetlands")
+setwd("C:/Users/rekhamarcus/OneDrive - University of Victoria/Wetlands")
 
 #join shorezone data from all sub-regions --------------------------------------
 
@@ -91,13 +91,10 @@ PNW_ESI_rast <- rast(PNW_ESI_st)
 saveRDS(PNW_ESI_st, "PNW_ESI.rds")
 PNW_ESI_raster.rds <- saveRDS(PNW_ESI_rast, file = "PNW_ESI_rast.rds")
 
-
-
 #wrangle ESI types into individual shapefiles -----------------------------------
 
 #load in PNW_ESI file - compiled ESI types for each region of the study area
 PNW_ESI <- readRDS("SLR/PNW_ESI.rds")
-#PNW_ESI_cast <- st_cast(PNW_ESI, "POLYGON")
 
 #Separate duplicate categories into separate categories and separate lines
 
@@ -147,10 +144,62 @@ saveRDS(list_ESI, file = "SLR/list_ESI.rds")
 #calculate the area of each bottom type in each estuary ------------------------
 
 #Bring in estuaries file
-estuaries <- readRDS("Data/Shapefiles/estuaries.rds")
+estuaries <- readRDS("Data/Shapefiles/estuaries.rds") 
+estuaries <- st_transform(estuaries, crs = st_crs("EPSG:4269"))
 
-PNW_SEP <- readRDS("SLR/PNW__ESItypes_separated.rds")
-list_ESI <- readRDS("SLR/list_ESI.rds")
+bottoms <- readRDS("SLR/Bottom_types_data/bottom_types_list.rds")
+
+#names of all bottom types in both ESI and BCCC datasets
+x <- c("EST_ID", "Area_HA", "ncells", "8A", "8D", "6B", "5", "9A", 
+       "3A", "10A", "2A", "8B", "8C", "1A", "1C", "4", "7", 
+       "6A",  "10B", "6C", "9B", "1B", "U", "10C", "10D", 
+       c(1:36))
+
+bottoms_estuaries <- list()
+
+for(i in 1:nrow(estuaries)) {
+  
+  estuary.bottoms.df <- as.data.frame(matrix(ncol = length(x), nrow=0, dimnames = list(NULL,x)))
+  
+  estuary.bottoms.df[1,1] <- estuaries$EST_ID[i]
+  estuary.bottoms.df[1,2] <- estuaries$Area_Ha[i]
+  
+  bbox <- st_bbox(estuaries[i,])
+  r <- rast(xmin = bbox[1], xmax = bbox[3], ymin = bbox[2], ymax = bbox[4], crs = "EPSG:4269", res = 0.01, vals = 1)
+  r <- crop(r, estuaries[i,])
+  r <- mask(r, estuaries[i,])
+  
+  estuary.bottoms.df[1,3] <- ncell(r[!is.na(r)])
+  
+  #extract number of raster cells that intersect with the estuary shapefile 
+  for(j in 1:length(bottoms)){ 
+    
+    #if there is no data, skip to next esi type
+    possibleError <- tryCatch(
+      c <- crop(r, bottoms[[j]]),
+      error = function(e) e)
+    
+    if(inherits(possibleError, "error")) next
+    
+    #mask to only include cells touched by shapefile 
+    m <- terra::mask(c, bottoms[[j]])
+    
+    estuary.bottoms.df[1, j+3] <- ncell(m[!is.na(m)])
+    
+  }
+  
+  bottoms_estuaries[[i]] <- estuary.bottoms.df
+  
+  print(i)
+  
+}
+
+estuary.bottom.types <- do.call(rbind, bottoms_estuaries)
+
+saveRDS(estuary.bottom.types, "SLR/estuary_bottom_types.rds")
+write.csv(estuary.bottom.types, "Data/Results/estuaries_bottom_types.csv")
+
+#outdated, only works on ESI data, missing BC historical data ------------------
 
 #For loop
 ESI_estuaries <- list()
@@ -242,47 +291,3 @@ write.csv(estuaries.esi, "Data/Results/estuaries_esi_results.csv")
 
 ggplot() +
   geom_sf(data = PNW_SEP)
-
-#OUTDATED----------------------------------------------------------------------
-
-#import all BC data which for some reason is in a bajillion different individual files
-#this is not needed because it contains all the same data as the october 13 bc data, plus some
-#data in the maritime provinces and alaska. whoops lol
-
-BC.shz <- list.files(path = "SLR/Shapefiles/BC/", pattern = '.gdb')
-
-#st_layers(paste("SLR/Shapefiles/BC/", BC.shz[2], sep = ""))
-
-BC.shorezone <- list()
-
-for(i in 1:length(BC.shz)){
-  
-  u <- read_sf(paste("SLR/Shapefiles/BC/", BC.shz[i], sep = ""), layer = "Unit_lines")
-  esi <- read_sf(paste("SLR/Shapefiles/BC/", BC.shz[i], sep = ""), layer = "ESI")
-  names(esi)[1] <- "PHY_IDENT"
-  
-  #add esi data to shapefile
-  d <- full_join(u, esi) %>% st_as_sf
-  
-  #subset to only the columns needed
-  d <- d[,c(10, 8, 9)]
-  
-  #reproject to WGS84 so they all work together nicely
-  d <- st_transform(d, "EPSG:4326")
-  
-  #rename column so they for real all work together nicely
-  names(d)[2] <- "Shape_Length"
-  st_geometry(d) <- "Shape"
-  
-  BC.shorezone[[i]] <- d
-  
-}
-
-#bc historical data is different than the rest of the files - add in separately
-f <- read_sf(paste("SLR/Shapefiles/BC/", BC.shz[1], sep = ""), layer = "Unit")
-a <- f[,2] #get rid of all variables except SHAPE_Length 
-a <- st_transform(a, "EPSG:4326")
-names(a) <- c("Shape_Length", "Shape")
-BC.shorezone[[1]] <- a
-
-BC.SHOREZONE <- do.call(rbind, BC.shorezone)
