@@ -195,15 +195,15 @@ estuary.centers <- st_centroid(estuaries)
 ggplot() +
   coord_sf(datum = "ESRI:102008") +
   annotation_map_tile(type = "osm", zoomin = 0) +
-  geom_sf(data = pnw, fill = NA, color = 'grey') + 
-  geom_sf(data = estuary.centers, color = "#c9184a", size = 0.5) + 
+  geom_sf(data = pnw, fill = NA, color = 'black', size = 0.1) + 
+  geom_sf(data = estuary.centers, color = "#e63946", , fill = "#e63946", shape = 23, size = 0.5) + 
   theme_void() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         axis.title.x=element_blank(),
         axis.title.y=element_blank())
 
-ggsave("estuaries_points.png", 
+ggsave("Figures/Study_area/estuaries_points.png", 
        width = 6,
        height = 12,
        dpi = 600)
