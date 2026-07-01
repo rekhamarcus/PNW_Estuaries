@@ -1,0 +1,753 @@
+EST_ID,Estuary_Name
+1,Fanny Bay/Cowie Creek
+2,Englishman River
+3,Quatse River/Boyden Creek Complex
+4,Cluxewe River
+5,Little Qualicum River
+6,Trent River
+7,Tahsis River
+8,Leiner River
+9,Campbell River (2)
+10,Nanoose/Bonell Creek Complex
+11,Mud Bay/Rosewall/Waterloo Creek Complex
+12,Gorge Waters/Craigflower Creek
+13,Chemainus River/Bonsall Creek Complex
+14,Cowichan River
+15,Nanaimo River
+16,Courtenay River
+17,Sooke River
+18,Cypre River
+19,Bedwell Creek
+20,Bulson Creek
+21,Tranquil River
+22,Somas River
+23,Sarita River
+24,Squamish River
+25,Kitimat River
+26,Capilano River
+27,Tofino Creek
+28,Toquart River
+29,Maggie River
+30,Nahmint River
+31,Marble River
+32,Glenlion River
+33,Salmon River
+34,Black Creek
+35,Skeena/Ecstall/McNeil River Complex
+36,Tsable River
+37,Cous Creek
+38,Macktush Creek
+39,Lucky Creek
+40,Unnamed
+41,Coeur d'Alene Creek
+42,Snug Basin
+43,Tsowwin River
+44,San Josef River
+45,Hansen/Rasmus/Fisherman River Complex
+46,Shushartie River
+47,Nahwitti River
+48,Stranby River
+49,Clesklagh Creek
+50,Goodspeed River
+51,Hathaway Creek
+52,Youghpan Creek
+53,Wanokana Creek
+54,Kewquodie Creek
+55,Klootchlimmis Creek
+56,Koprino River
+57,Mahatta Creek
+58,Nordstrom Cove
+59,Denad Creek
+60,Kwatleo Creek
+61,Grant Bay
+62,Sydney River
+63,Ice River
+64,Hesquiat River
+65,Escalante River
+66,Mooyah River
+67,Silverado Creek
+68,Houston River
+69,Kleeptee Creek
+70,McCurdy Creek
+71,Nimpkish River
+72,Kokish River
+73,Tsitika River
+74,Big Qualicum River
+75,Oyster River
+76,Amor de Cosmos Creek
+77,Unnamed
+78,Adam River
+79,Waukwaas Creek
+80,Keogh River
+81,Tsulquate River
+82,Songhees Creek
+83,Unnamed
+84,Power River
+85,Ououkinsh/Unnamed River Complex
+86,Easy Inlet
+87,Kauwinch River
+88,Kashutl River
+89,Artlish River
+90,Little Zeballos River
+91,Burman River
+92,Jacklah River
+93,Atleo River
+94,Unnamed
+95,Moyeha River
+96,Mohun Creek
+97,Colquitz River
+98,Mill Stream
+99,Effingham River
+100,Henderson Lake
+101,China Creek
+102,Coleman Creek
+103,Keith River
+104,Malksope River
+105,McKay Cove
+106,Clanninick Creek
+107,Conuma River
+108,Canton Creek
+109,Sucwoa River
+110,Tlupana/Nesook River Complex
+111,Gold River
+112,Megin River
+113,Kennedy River
+114,Schmidt Creek
+115,Naka Creek
+116,Unnamed
+117,Cayaghis Creek
+118,Klaskish River
+119,Irony Creek
+120,East Creek
+121,Kingfisher Creek
+122,Moneses Lake
+123,Empetrum Lake
+124,Nasparti River
+125,Battle Bay
+126,Tahsish River
+127,Kaouk River
+128,Kapoose Creek
+129,Espinosa Creek
+130,Zeballos River
+131,Beano Creek
+132,Pachena River
+133,Jordan River
+134,Kirby Creek
+135,Muir Creek
+136,San Juan River
+137,Gordon River
+138,Loss Creek
+139,Sombrio Creek
+140,Camper Creek
+141,Cullite Creek
+142,Logan Creek
+143,Walbran Creek
+144,Carmanah Creek
+145,Cheewhat River
+146,Nitinat River
+147,Bilston Creek
+148,Restless Bight
+149,Lipsett Creek
+150,Macjack River
+151,Amos Creek
+152,Klanawa River
+153,Sialun Creek
+154,Beresford Creek
+155,Hana Koot Creek
+156,Jalun River
+157,Haines Creek
+158,Cave Creek
+159,Otard Creek
+160,Coates Creek
+161,Hosu Cove
+162,Unnamed
+163,Mace Creek
+164,Mercer Lake
+165,Seal Inlet
+166,Tartu Inlet
+167,Unnamed
+168,Unnamed
+169,Riley Creek
+170,Mountain Creek
+171,Gudal Creek
+172,Unnamed
+173,Lagins Creek
+174,Deena Creek
+175,Security Cove
+176,Lignite Creek
+177,Naden River/Davidson Creek Complex
+178,Stanley Creek
+179,Christie River
+180,Skonun River
+181,Hiellen River
+182,Oeanda River
+183,Braverman Creek
+184,Dass Creek
+185,Upper Victoria Lake Chain
+186,Flat Creek
+187,Tasu Creek
+188,Head of Kootenay Inlet
+189,Kootenay Inlet
+190,Mackenzie Cove
+191,Datlamen Creek
+192,Mamin Creek
+193,Kumdis Creek
+194,Kumdis Slough
+195,Ain River
+196,McClinton/Unnamed Creek Complex
+197,Yakoun River
+198,Tlell River
+199,Otun Creek
+200,Kloiya River
+201,Toon River
+202,Thulme River
+203,Ensheshese River
+204,Georgetown Creek
+205,Khutzeymateen River
+206,Chambers Creek
+207,Lynn Creek
+208,Seymour River (1)
+209,Kshwan River
+210,Oih Creek
+211,Hans Point
+212,Bonanza Creek
+213,Cascade Creek
+214,Stagoo Creek
+215,Walt Creek
+216,Georgie River
+217,Marmot River
+218,Nickomekl/Serpentine River Complex
+219,Kromann/Moore Cove Creek Complex
+220,Billy Creek
+221,Captain Cove
+222,Hankin Point
+223,Keswar Inlet
+224,Unnamed
+225,Keyarka Cove
+226,Kingkown Inlet
+227,Kooryet Creek
+228,Hart Creek
+229,Wathl Creek
+230,Wathlsto Creek
+231,Bish Creek
+232,Foch Lagoon
+233,Unnamed
+234,Quaal River/Kitkiata Creek Complex
+235,Kiskosh Creek
+236,Unnamed
+237,Unnamed
+238,Pike Creek
+239,Weewanie Creek
+240,Kumealon Creek
+241,Pa-aat River
+242,Salter Lake
+243,Evelyn Creek
+244,Unnamed
+245,Belowe Creek
+246,Tsimtack Lake
+247,Crab River
+248,Paril River
+249,Triumph River
+250,Unnamed
+251,Kiltuish River
+252,Brim River/Owyacumish Creek Complex
+253,Barrie Creek
+254,Kowesas River
+255,Price Cove
+256,Kitlope/Tsaytis River Complex
+257,Unnamed
+258,Kemano/Wahoo River Complex
+259,Goat River
+260,Klekane River
+261,Scow Bay
+262,Aaltanhash River
+263,Canoona River
+264,Cornwall Inlet
+265,Arnoup Creek
+266,Tyler Creek
+267,Quigley Creek
+268,Unnamed
+269,Bloomfield Lake
+270,Unnamed
+271,Surf River
+272,Keecha Creek
+273,Stawamus River
+274,Mamquam River
+275,Western Lake Chain
+276,Ingram Creek
+277,Spiller Inlet
+278,Lard Creek
+279,Kainet Creek
+280,James Bay
+281,Mathieson Channel
+282,Hird Point
+283,Snass Lake
+284,Carter River
+285,Kdelmashan Creek
+286,Weeteeam Bay Area
+287,Unnamed
+288,Lombard Point
+289,Woodcock Islands Area
+290,Kwakwa River
+291,Stannard Creek
+292,Betteridge Inlet Area
+293,Banks Lakes
+294,Hevenor Lagoon
+295,Falls River
+296,Kildala River
+297,Dala River
+298,Khutze River
+299,Mussel River
+300,Poison Cove Creek
+301,Bottleneck Inlet
+302,Roderick Cove
+303,Tankeeah River
+304,Yeo Lake
+305,Mosquito Bay
+306,Neekas Creek
+307,Quartcha Creek
+308,Ellerslie Lagoon
+309,Roscoe Creek
+310,Jermaine Point Area
+311,Unnamed
+312,Kimsquit/Hoam Creek Complex
+313,Dean River
+314,Sutslem Creek
+315,Swallop Creek
+316,Jump Across Creek
+317,Skowquiltz River
+318,Unnamed
+319,Nusash Creek
+320,Nascall River
+321,Hot Springs Creek
+322,Ickna Creek
+323,Taleomey River
+324,Noeick River
+325,Unnamed
+326,Nooseseck River
+327,Clayton Falls Creek
+328,Bella Coola/Necleetsconnay River Complex
+329,Farquhar River
+330,Link River
+331,Four Lakes
+332,Unnamed
+333,Dunn Point Area
+334,Kakushdish Harbour Area
+335,Gibraltar Point
+336,Kwatna River
+337,Marvinas Bay
+338,Yuquot Point
+339,Millar Channel
+340,Kutcous Point
+341,Cow Bay
+342,Bazett Island Area
+343,Pye Creek
+344,Holti Point
+345,Restoration Bay
+346,Quatlena River
+347,Doc Creek
+348,Nootum River
+349,Ada Cove
+350,Koeye River
+351,Bolivar Islet
+352,Waterfall Inlet
+353,Oyster Bay
+354,MacNair Creek
+355,Clyak River
+356,Milton River
+357,Kilbella/Chuckwalla River Complex
+358,Wannock/Nicknaqueet River Complex
+359,Nekite River
+360,Draney Creek
+361,Campbell River (1)
+362,Takush River
+363,Long Lake
+364,Shade Island area
+365,Waump Creek
+366,Evader Creek
+367,Huaskin Lake
+368,Seymour River (2)
+369,Cohoe Creek
+370,Rainbow Creek
+371,Taaltz Creek
+372,Mackenzie Lake
+373,Nimmo Bay
+374,Wakeman River
+375,Charles Creek
+376,Ahta River
+377,Viner Sound
+378,Scott Cove
+379,Gilford Creek
+380,Kingcome River
+381,Kakweiken River
+382,Lull Creek
+383,Kwalate River
+384,Tom Browne Creek
+385,Blind Creek
+386,Ahnuhati River
+387,Sim River
+388,Wahkash Creek
+389,Franklin River
+390,Klinaklini River
+391,Fraser River
+392,Fulmore/Shoal Creek Complex
+393,Stafford River
+394,Apple River
+395,Heydon Creek
+396,Phillips River
+397,Frederick Arm
+398,Moh Creek
+399,Bear River [1]
+400,Southgate River
+401,Homathko/Teaquahan River Complex
+402,Village Bay
+403,Orford River
+404,Quatam River
+405,Brem River
+406,Toba/Tahumming River Complex
+407,Theodosia River
+408,Sliammon Creek
+409,Powell River
+410,Lois River
+411,Skwawka River
+412,Stakawus Creek
+413,Brittain River
+414,Vancouver River/High Creek Complex
+415,Treat Creek
+416,Earle Creek
+417,Tzoonie River
+418,Gustafson Bay
+419,Misery Creek
+420,Sechelt Creek
+421,Clowhom River
+422,Rainy River
+423,McNab Creek
+424,Mill Creek
+425,Furry Creek
+426,Grand Creek
+427,Indian River
+428,Kitsault/Illiance River Complex
+429,Lime Creek
+430,Donahue Creek
+431,Nass/Ksi'Hlginx/Burton/Iknouck/Chambers/Kincolith River
+432,Kwinamass River
+433,Whitly Point
+434,Oona River
+435,Kumowdah River
+436,Jesse River
+437,Gilttoyees River
+438,Green Lagoon
+439,Unnamed
+440,Goldstream River
+441,Bear River [2]
+442,Asseek River
+443,Europa Creek
+444,Tsampanaknok Bay Creek
+445,Porcher Inlet
+1000,Point Roberts
+1001,Drayton Harbor
+1002,Birch Bay
+1003,Nooksack River
+1004,Padden Creek
+1005,Chuckanut Bay
+1006,Nelson Bay
+1007,Westcott Bay
+1008,Rocky Bay
+1009,Garrison Bay
+1010,Blind Bay
+1011,Squaw Bay
+1012,Argyle Lagoon
+1013,Fisherman Bay
+1014,False Bay
+1015,Davis Bay
+1016,Barlow Bay
+1017,Samish Bay
+1018,Padilla Bay
+1019,Fidalgo Bay
+1020,Ship Harbor Lagoon
+1021,Flounder Bay
+1022,Simik Bay
+1023,Bowman Bay
+1024,Dugualla Bay
+1025,Skagit Bay
+1026,Crescent Harbor Salt Marsh
+1027,Freund Marsh
+1028,Maylor Point
+1029,Grasser's Lagoon
+1030,Kennedys Lagoon
+1031,Perigo's Lagoon
+1032,Harrington Lagoon
+1033,Race Lagoon
+1034,Stillaguamish River
+1035,Triangle Cove
+1036,Crockett Lake
+1037,Camano Country Club
+1038,Saratoga Pass Tidelands
+1039,Elger Bay
+1040,Lake Hancock
+1041,Lagoon Point
+1042,Tulalip Bay
+1043,Snohomish River
+1044,Deer Lagoon / Useless Bay
+1045,Maxwelton
+1046,Cultus Bay
+1047,Appletree Cove
+1048,Miller Bay
+1049,Doe-Kag-Wats
+1050,Liberty Bay
+1051,Point Monroe
+1052,Keyport Lagoon
+1053,Port Madison
+1054,Salmon Bay
+1055,Burke Bay
+1056,Fletcher Bay
+1057,Clear Creek
+1058,Barker Creek
+1059,Eagle Harbor
+1060,Chico Creek
+1061,Schel-chelb
+1062,Phinney Bay
+1063,Oyster Bay
+1064,Clam Bay
+1065,Duwamish River
+1066,Gorst Creek
+1067,Curley Creek
+1068,Harper
+1069,Miller Creek
+1070,Olalla Creek
+1071,Gig Harbor
+1072,Puyallup River
+1073,Burley Lagoon
+1074,Minter Creek
+1075,Glen Cove
+1076,Wollochet Bay
+1077,Days Island Harbor
+1078,Chambers Creek
+1079,West Filucy Bay
+1080,East Oro Bay
+1081,Oro Bay
+1082,Nisqually River
+1083,Mill Bight
+1084,Taylor Bay
+1085,Henderson Inlet
+1086,Big Fishtrap
+1087,Gull Harbor
+1088,Deschutes River
+1089,Mud Bay
+1090,Young Cove
+1091,Fry Cove
+1092,Sanderson Harbor
+1093,Hudson Cove
+1094,Oyster Bay
+1095,Skookum Inlet
+1096,Belspeox Point
+1097,Mill Creek
+1098,Goldsborough Creek
+1099,Campbell Creek / Chapman Cove
+1100,Oakland Bay
+1101,West Harstine Island
+1102,Whiteman Cove
+1103,Herron
+1104,Jarrell Cove
+1105,Dutcher Cove
+1106,McLane Cove
+1107,Grapeview
+1108,Vaughn Bay
+1109,Rocky Bay
+1110,North Bay
+1111,Lynch Cove
+1112,Tahuya River
+1113,Skokomish River
+1114,Dewatto Bay
+1115,Lillwaup Bay
+1116,Hamma Hamma River
+1117,Anderson Creek
+1118,Duckabush River
+1119,Stavis Bay
+1120,Seabeck Bay
+1121,Big Beef Creek
+1122,Pleasant Harbor
+1123,Anderson Creek
+1124,Fisherman Harbor
+1125,Dosewallips River
+1126,Zelatched Point Lagoon
+1127,Right Smart Cove
+1128,Jackson Cove
+1129,Bangor Lake
+1130,Cattail Lake
+1131,Quilcene Bay
+1132,Broad Spit
+1133,Thorndyke Creek
+1134,Tarboo Bay
+1135,Port Gamble
+1136,Bridgehaven
+1137,Shine Creek
+1138,Coon Bay
+1139,Foulweather Bluff
+1140,Twin Spits
+1141,Port Ludlow
+1142,Mats Mats Bay
+1143,Kilisut Harbor
+1144,Oak Bay
+1145,Hadlock
+1146,Chimacum Creek
+1147,Walan Point
+1148,Port Townsend mill
+1149,Salmon-Snow
+1150,Gardiner
+1151,Sequim Bay
+1152,Gierin Creek
+1153,Dungeness Bay
+1154,McDonald Creek
+1155,Morse Creek
+1156,The Lagoon
+1157,Elwha River
+1158,Salt Creek
+1159,East Twin River
+1160,Pysht River
+1161,Clallam River
+1162,Hoko River
+1163,Sekiu River
+1164,Bullman Creek
+1165,Sail River
+2000,Waatch River
+2001,Sooes River
+2002,Ozette River
+2003,Quillayute River
+2004,Goodman Creek
+2005,Mosquito Creek
+2006,Hoh River
+2007,Cedar Creek
+2008,Kalaloch Creek
+2009,Queets River
+2010,Whale Creek
+2011,Raft River
+2012,Camp Creek
+2013,Duck Creek
+2014,Quinault River
+2015,Wreck Creek
+2016,Moclips River
+2017,Joe Creek
+2018,Elk Creek
+2019,Boone Creek
+2020,Copalis River
+2021,Connor Creek
+2022,Grays Harbor
+2023,Willapa Bay
+2024,Loomis Lake Creek
+2025,Columbia River - Reach A
+2026,Columbia River - Reach B
+2027,Columbia River - Reach C
+2028,Columbia River - Reach D
+2029,Columbia River - Reach E
+2030,Columbia River - Reach F
+2031,Columbia River - Reach G
+2032,Columbia River - Reach H
+2033,Clatsop Spit
+2034,Necanicum River
+2035,Ecola Creek
+2036,Nehalem River
+2037,Lake Lytle
+2038,Smith Lake
+2039,Tillamook Bay
+2040,Netarts Bay
+2041,Sand Lake
+2042,Nestucca Bay
+2043,Daley Lake
+2044,Neskowin Creek
+2045,Salmon River
+2046,Devils Lake
+2047,Siletz Bay
+2048,Depoe Bay
+2049,Little Creek
+2050,Yaquina Bay
+2051,Beaver Creek
+2052,Alsea Bay
+2053,Big Creek
+2054,Yachats River
+2055,Tenmile Creek
+2056,Big Creek
+2057,Cape Creek
+2058,Berry Creek
+2059,Sutton Creek
+2060,Siuslaw River
+2061,Siltcoos River
+2062,Tahkenitch Creek
+2063,Umpqua River
+2064,Tenmile Creek
+2065,Coos Bay
+2066,Sunset Bay
+2067,Coquille River
+2068,Twomile Creek
+2069,Fourmile Creek
+2070,New River
+2071,Floras Creek
+2072,Sixes River
+2073,Elk River
+2074,Port Orford Head
+2075,Hubbard Creek
+2076,Brush Creek
+2077,Mussel Creek
+2078,Euchre Creek
+2079,Rogue River
+2080,Hunter Creek
+2081,Myers Creek
+2082,Pistol River
+2083,Thomas Creek
+2084,Whaleshead Creek
+2085,Chetco River
+2086,Winchuck River
+2087,Smith River
+2088,Lake Earl
+2089,Pebble Beach
+2090,Crescent City Harbor
+2091,NC9 Cresent Beach
+2092,Wilson Creek
+2093,Lagoon Creek
+2094,Klamath River
+2095,Johnson Creek
+2096,Ossagon Creek
+2097,Fern Canyon
+2098,Squashan Creek
+2099,Espa Lagoon
+2100,Redwood Creek
+2101,Stone Lagoon
+2102,Big Lagoon
+2103,Little River
+2104,Clam Beach
+2105,Mad River
+2106,Humboldt Bay
+2107,Eel River
+2108,Guthrie Creek
+2109,Bear River
+3000,McNutt Gulch
+3001,Mattole River
+3002,Jackass Creek
+3003,Usal Creek
+3004,Cottaneva Creek
+3005,Wages Creek
+3006,Chadbourne Gulch
+3007,Seaside Creek
+3008,Ten Mile River
+3009,Inglenook Fen
+3010,Lake Cleone
+3011,Virgin Creek
+3012,Pudding Creek
+3013,Noyo River
+3014,Hare Creek
+3015,Mitchell Creek
+3016,Caspar Creek
+3017,Russian Gulch
+3018,Big River
+3019,Little River
+3020,Albion River
+3021,Little Salmon Creek
+3022,Navarro River
+3023,Greenwood Creek
+3024,Elk Creek
+3025,Irish Gulch
+3026,Alder Creek
+3027,Manchester
+3028,Brush Creek
+3029,Garcia River
+3030,Gualala River
