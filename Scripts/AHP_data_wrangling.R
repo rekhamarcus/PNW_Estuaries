@@ -96,23 +96,33 @@ waterfowl <- waterfowl[,c(1:13,18:19,29,27)]
 
 #range normalizing to ensure all values fall between 0 and 1
 
-for(i in 8:17){
-  
-  maintaining[,i+10] <-  
-           (maintaining[,i] - min(maintaining[,i], na.rm = TRUE))/ 
-           (max(maintaining[,i], na.rm = TRUE) - min(maintaining[,i], na.rm = TRUE))
-  
-  names(maintaining)[i+10] <- paste(names(maintaining)[i], ".norm", sep = "")
-  
-}
+#for maintaining, shorebirds, and waterfowl data, normalize cliamte and slr data by lowest value 
+#as higher values =/= better (aka non-beneficial categories)
+
+#maintaining data
+
+#scale climate data between 0 and 1, 1 being most stable/least change
+maintaining$mean.tas.norm <- min(maintaining$mean.tas.abs, na.rm = TRUE)/maintaining$mean.tas.abs
+maintaining$SD.tas.norm <- min(maintaining$SD.tas.abs, na.rm = TRUE)/maintaining$SD.tas.abs
+maintaining$ES0.99.tas.norm <- min(maintaining$ES0.99.tas.abs, na.rm = TRUE)/maintaining$ES0.99.tas.abs
+maintaining$mean.pr.norm <- min(maintaining$mean.pr.abs, na.rm = TRUE)/maintaining$mean.pr.abs
+maintaining$SD.pr.norm <- min(maintaining$SD.pr.abs, na.rm = TRUE)/maintaining$SD.pr.abs
+maintaining$ES0.99.pr.norm <- min(maintaining$ES0.99.pr.abs, na.rm = TRUE)/maintaining$ES0.99.pr.abs
+
+#scale bird data between 0 and 1, 1 being highest number of birds
+maintaining$richness.norm <- maintaining$richness/max(maintaining$richness, na.rm = TRUE)
+maintaining$relative.abundance.norm <- maintaining$relative.abundance/max(maintaining$relative.abundance, na.rm = TRUE)
+
+#scale slr data between 0 and 1, 1 being most stable/least change - have to input actual value bc there are 0s in the data
+maintaining$risk5.norm <- 0.05143403/maintaining$risk5
+maintaining$risk5.norm[maintaining$risk5.norm == Inf] <- 1
 
 write.csv(maintaining, "Ranking/AHP/estuary_assessment_maintaining_data.csv")
 
+#for improving dataset, scale all data in the same direction (higher values = more beneficial)
 for(i in 8:17){
   
-  improving[,i+10] <-  
-    (improving[,i] - min(improving[,i], na.rm = TRUE))/ 
-    (max(improving[,i], na.rm = TRUE) - min(improving[,i], na.rm = TRUE))
+  improving[,i+10] <-  improving[,i]/max(improving[,i], na.rm = TRUE) 
   
   names(improving)[i+10] <- paste(names(improving)[i], ".norm", sep = "")
   
@@ -120,17 +130,27 @@ for(i in 8:17){
 
 write.csv(improving, "Ranking/AHP/estuary_assessment_improving_data.csv")
 
-for(i in 8:17){
-  
-  shorebirds[,i+10] <-  
-    (shorebirds[,i] - min(shorebirds[,i], na.rm = TRUE))/ 
-    (max(shorebirds[,i], na.rm = TRUE) - min(shorebirds[,i], na.rm = TRUE))
-  
-  names(shorebirds)[i+10] <- paste(names(shorebirds)[i], ".norm", sep = "")
-  
-}
+#shorebird data
+
+#scale climate data between 0 and 1, 1 being most stable/least change
+shorebirds$mean.tas.norm <- min(shorebirds$mean.tas.abs, na.rm = TRUE)/shorebirds$mean.tas.abs
+shorebirds$SD.tas.norm <- min(shorebirds$SD.tas.abs, na.rm = TRUE)/shorebirds$SD.tas.abs
+shorebirds$ES0.99.tas.norm <- min(shorebirds$ES0.99.tas.abs, na.rm = TRUE)/shorebirds$ES0.99.tas.abs
+shorebirds$mean.pr.norm <- min(shorebirds$mean.pr.abs, na.rm = TRUE)/shorebirds$mean.pr.abs
+shorebirds$SD.pr.norm <- min(shorebirds$SD.pr.abs, na.rm = TRUE)/shorebirds$SD.pr.abs
+shorebirds$ES0.99.pr.norm <- min(shorebirds$ES0.99.pr.abs, na.rm = TRUE)/shorebirds$ES0.99.pr.abs
+
+#scale bird data between 0 and 1, 1 being highest number of birds
+shorebirds$richness.norm <- shorebirds$shorebird.richness/max(shorebirds$shorebird.richness, na.rm = TRUE)
+shorebirds$relative.abundance.norm <- shorebirds$shorebird.relative.abundance/max(shorebirds$shorebird.relative.abundance, na.rm = TRUE)
+
+#scale slr data between 0 and 1, 1 being most stable/least change - have to input actual value bc there are 0s in the data
+shorebirds$meanrisk.norm <- 0.04919284/shorebirds$meanrisk
+shorebirds$meanrisk.norm[shorebirds$meanrisk == Inf] <- 1
 
 write.csv(shorebirds, "Ranking/AHP/estuary_assessment_shorebird_data.csv")
+
+#waterfowl data
 
 for(i in 8:17){
   
@@ -142,7 +162,23 @@ for(i in 8:17){
   
 }
 
+#shorebird data
+
+#scale climate data between 0 and 1, 1 being most stable/least change
+waterfowl$mean.tas.norm <- min(waterfowl$mean.tas.abs, na.rm = TRUE)/waterfowl$mean.tas.abs
+waterfowl$SD.tas.norm <- min(waterfowl$SD.tas.abs, na.rm = TRUE)/waterfowl$SD.tas.abs
+waterfowl$ES0.99.tas.norm <- min(waterfowl$ES0.99.tas.abs, na.rm = TRUE)/waterfowl$ES0.99.tas.abs
+waterfowl$mean.pr.norm <- min(waterfowl$mean.pr.abs, na.rm = TRUE)/waterfowl$mean.pr.abs
+waterfowl$SD.pr.norm <- min(waterfowl$SD.pr.abs, na.rm = TRUE)/waterfowl$SD.pr.abs
+waterfowl$ES0.99.pr.norm <- min(waterfowl$ES0.99.pr.abs, na.rm = TRUE)/waterfowl$ES0.99.pr.abs
+
+#scale bird data between 0 and 1, 1 being highest number of birds
+waterfowl$richness.norm <- waterfowl$waterfowl.richness/max(waterfowl$waterfowl.richness, na.rm = TRUE)
+waterfowl$relative.abundance.norm <- waterfowl$waterfowl.relative.abundance/max(waterfowl$waterfowl.relative.abundance, na.rm = TRUE)
+
+#scale slr data between 0 and 1, 1 being most stable/least change - have to input actual value bc there are 0s in the data
+waterfowl$meanrisk.norm <- 0.04919284/waterfowl$meanrisk
+waterfowl$meanrisk.norm[waterfowl$meanrisk == Inf] <- 1
+
 write.csv(waterfowl, "Ranking/AHP/estuary_assessment_waterfowl_data.csv")
-
-
 
