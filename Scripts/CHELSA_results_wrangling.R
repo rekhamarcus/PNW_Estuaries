@@ -14,6 +14,23 @@ r2041.SSP5 <- r2041[r2041$SSP == "SSP5_8.5",]
 
 estuaries <- unique(r$EST_ID)
 
+#subset results for writing ----------------------------------------------------
+
+r2041.SSP <- r2041[r2041$SSP != "SSP3_7.0",]
+
+r2041.SSP$mean.pr.abs <- abs(r2041.SSP$mean.pr)
+r2041.SSP$SD.pr.abs <- abs(r2041.SSP$SD.pr)
+r2041.SSP$ES0.99.pr.abs <- abs(r2041.SSP$ES0.99.pr)
+r2041.SSP$mean.tas.abs <- abs(r2041.SSP$mean.tas)
+r2041.SSP$SD.tas.abs <- abs(r2041.SSP$SD.tas)
+r2041.SSP$ES0.99.tas.abs <- abs(r2041.SSP$ES0.99.tas)
+
+saveRDS(r2041.SSP, "Data/Results/results_2041.rds")
+write.csv(r2041.SSP, "Data/Results/results_2041.csv")
+
+#subset SSP5 data and summarize ---------------------------------------------------
+
+
 SUM <- list()
 
 for(i in 1:length(estuaries)){

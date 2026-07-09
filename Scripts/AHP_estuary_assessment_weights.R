@@ -2,16 +2,15 @@
 
 library("dplyr")
 
-setwd("C:/Users/rekha/OneDrive - University of Victoria/Wetlands")
 options(scipen = 999) #remove scientific notation
 
 #load in matrices created from survey
 
-clim <- read.csv("Ranking/AHP/climate_preference_matrix.csv")
+clim <- read.csv("AHP/improving/climate_preference_matrix.csv")
 clim.layers <- clim$X
 clim <- as.matrix(clim[,c(2:7)])
 
-data <- read.csv("Ranking/AHP/data_preference_matrix.csv")
+data <- read.csv("AHP/improving/data_preference_matrix.csv")
 data.layers <- data$X
 data <- as.matrix(data[,c(2:5)])
 
@@ -38,10 +37,5 @@ names(data.w)[2] <- "prin.eigenvector"
 
 #save matrices of weights
 
-write.csv(clim.w, "Ranking/AHP/climate_data_weights.csv")
-write.csv(data.w, "Ranking/AHP/data_weights.csv")
-
-
-
-
-
+#write.csv(clim.w, "Ranking/AHP/climate_data_weights.csv")
+#write.csv(data.w, "Ranking/AHP/data_weights.csv")
