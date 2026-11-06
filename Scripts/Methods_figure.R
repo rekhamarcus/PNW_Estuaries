@@ -31,7 +31,7 @@ ggplot(df, aes(x = temp, fill = scenario)) +
   geom_vline(data = df, aes(xintercept = mean(df$temp)- 5, color = "mean"), linetype = "dashed", color = "black") +
   geom_vline(data = df, aes(xintercept = mean(df$temp) + 5, color = "mean"), linetype = "dashed", color = "black") +
   geom_segment(aes(x = mean(df$temp)- 5, y = 0.01, xend = mean(df$temp) + 5, yend = 0.01), arrow = arrow()) +
-  geom_text(label = "Mean Change", x = 11, y = 0.014, colour = "black", fontface = "bold", size = 8) +
+  geom_text(label = "Mean Change", x = 8, y = 0.014, colour = "black", fontface = "bold", size = 5) +
   xlab("Variable") +
   ylab("Frequency") +
   theme_bw() +
@@ -79,8 +79,7 @@ ggplot(df, aes(x = temp, fill = scenario)) +
   geom_segment(aes(x = mean(df$temp), y = 0.009, xend = mean(df$temp), yend = 0.011)) +
   geom_segment(aes(x = mean(df$temp) + (sd(df$temp) + 4), y = 0.009, xend = mean(df$temp) + (sd(df$temp) + 4), yend = 0.011)) +
   geom_segment(aes(x = mean(df$temp) + 2, y = 0.037, xend = mean(df$temp) + 2, yend = 0.01), arrow = arrow()) +
-  geom_text(label = "Variability", x = 7, y = 0.023, colour = "black", fontface = "bold", size = 8) +
-  geom_text(label = "Change", x = 7, y = 0.019, colour = "black", fontface = "bold", size = 8) +
+  geom_text(label = "Variability \nChange", x = 5, y = 0.023, colour = "black", fontface = "bold", size = 5) +
   xlab("Variable") +
   ylab("Frequency") +
   theme_bw() +
@@ -104,9 +103,45 @@ ggplot(df, aes(x = temp, fill = scenario)) +
        width = 9,
        height = 7, 
        dpi = 600)
-
-
-#concept - change in magnitude of worst case scenario
+ 
+ #concept - change in extremes
+ 
+ ggplot(df, aes(x = temp)) +
+   stat_function(fun = dnorm, args = c(mean = mean(df$temp) + 3, sd = sd(df$temp) + 2), geom = "area", fill = "#e63946", alpha = 0.6) +
+   stat_function(fun = dnorm, args = c(mean = mean(df$temp) + 3, sd = sd(df$temp) + 2), geom = "area", fill = "#e63946", xlim = c((mean(df$temp) + 3) + 2*(sd(df$temp) + 2), 40), alpha = 0.9, aes(colour = "Future")) +
+   stat_function(fun = dnorm, args = c(mean = mean(df$temp), sd = sd(df$temp)), geom = "area", fill = "#457b9d", alpha = 0.6) +
+   stat_function(fun = dnorm, args = c(mean = mean(df$temp), sd = sd(df$temp)), geom = "area", fill = "#457b9d", xlim = c((mean(df$temp)) + 2*sd(df$temp), 40), alpha = 0.9, aes(colour = "Historical")) +
+   stat_function(fun = dnorm, args = c(mean = mean(df$temp), sd = sd(df$temp))) +
+   stat_function(fun = dnorm, args = c(mean = mean(df$temp) + 3, sd = sd(df$temp) + 2)) +
+   geom_segment(aes(x = (mean(df$temp)) + 2*sd(df$temp), y = 0, xend = (mean(df$temp)) + 2*sd(df$temp), yend = 0.008)) + #95th p
+   geom_segment(aes(x = (mean(df$temp) + 3) + 2*(sd(df$temp) + 2), y = 0, xend = (mean(df$temp) + 3) + 2*(sd(df$temp) +2), yend = 0.0062)) + #95th p
+   geom_segment(aes(x = 26, y = 0.001, xend = 30, yend = 0.02)) + 
+   geom_segment(aes(x = 34, y = 0.001, xend = 30, yend = 0.02)) + 
+   geom_text(label = "Change in Extremes", x = 32, y = 0.0225, colour = "black", fontface = "bold", size = 5) +
+   scale_y_continuous(expand = expansion(mult = 0)) +
+   xlab("Variable") +
+   ylab("Frequency") +
+   scale_x_continuous(expand = expansion(mult = 0), limits = c(-5, 40)) +
+   theme_bw() +
+   theme(panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.ticks.x=element_blank(),
+         axis.ticks.y=element_blank(),
+         axis.text.x = element_blank(),
+         axis.text.y = element_blank(),
+         axis.title.x = element_text(size = 20, face = "bold"),
+         axis.title.y = element_text(size = 20, face = "bold"),
+         legend.title = element_blank(), 
+         legend.text = element_text(size = 15, face = "bold"),
+         panel.background = element_rect(fill = "transparent", color = NA),
+         plot.background = element_rect(fill = "transparent", color = NA),
+         legend.background = element_rect(fill = "transparent", color = NA),
+         legend.position = c(0.85, 0.8))
+ 
+ ggsave("Figures/shift_ES.png",
+        width = 9,
+        height = 7, 
+        dpi = 600)
  
 #scatterplot of year data
 
@@ -124,13 +159,17 @@ tmax <- t.df %>%
   group_by(year) %>%
   summarise(max = max(temp))
 
+tmax <- t.df[t.df$temp %in% tmax$max,]
+
 ggplot() +
-   geom_point(data = t.df, aes(x = date, y = temp)) +
-   scale_y_continuous(expand = expansion(mult = 0)) +
-   scale_x_continuous(expand = expansion(mult = 0.1)) +
-   scale_x_date(date_labels = "%Y") + 
+  geom_vline(data = t.df, aes(xintercept = as.Date("01-1-02 12:00:00 EDT", "%d-%m-%y")), linetype = "dashed", color = "gray") + 
+  geom_vline(data = t.df, aes(xintercept = as.Date("01-1-03 12:00:00 EDT", "%d-%m-%y")), linetype = "dashed", color = "gray") + 
+  geom_vline(data = t.df, aes(xintercept = as.Date("01-1-04 12:00:00 EDT", "%d-%m-%y")), linetype = "dashed", color = "gray") + 
+  geom_vline(data = t.df, aes(xintercept = as.Date("01-1-05 12:00:00 EDT", "%d-%m-%y")), linetype = "dashed", color = "gray") + 
+  geom_point(data = t.df, aes(x = date, y = temp), size = 2) +
+  geom_point(data = tmax, aes(x = date, y = temp), size = 3, color = "#e63946") +
   xlab("Year") +
-  ylab("Temperature") +
+  ylab("Variable") +
   theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -138,16 +177,22 @@ ggplot() +
         axis.ticks.y=element_blank(),
         axis.text.x = element_blank(),
         axis.text.y = element_blank(),
+        axis.title.x = element_text(size = 15, face = "bold"),
+        axis.title.y = element_text(size = 15, face = "bold"),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA),
         legend.position = c(0.85, 0.8))
-   
+
+ggsave("Figures/year_BM_scatterplot.png",
+       width = 9.3,
+       height = 6.6, 
+       dpi = 600)
  
 #evd diagram
 
 ggplot(df, aes(x = temp)) +
-  stat_function(fun = dnorm, args = c(mean = mean(df$temp), sd = sd(df$temp)), geom = "area", fill = "#457b9d", alpha = 0.6) +
-  stat_function(fun = dnorm, args = c(mean = mean(df$temp), sd = sd(df$temp)), geom = "area", fill = "#457b9d", xlim = c((mean(df$temp)), (mean(df$temp)) + sd(df$temp)), alpha = 0.9) +
+  stat_function(fun = dnorm, args = c(mean = mean(df$temp), sd = sd(df$temp)), geom = "area", fill = "#e63946", alpha = 0.6) +
+  stat_function(fun = dnorm, args = c(mean = mean(df$temp), sd = sd(df$temp)), geom = "area", fill = "#e63946", xlim = c((mean(df$temp)), (mean(df$temp)) + sd(df$temp)), alpha = 0.9) +
   stat_function(fun = dnorm, args = c(mean = mean(df$temp), sd = sd(df$temp)), geom = "area", fill = "#e63946", xlim = c((mean(df$temp)) + 2*sd(df$temp), 35), alpha = 0.9) +
   stat_function(fun = dnorm, args = c(mean = mean(df$temp), sd = sd(df$temp))) +
   geom_vline(data = df, aes(xintercept = mean(df$temp), color = "mean"), linetype = "dashed", color = "black") + #mean
@@ -156,14 +201,14 @@ ggplot(df, aes(x = temp)) +
   geom_segment(aes(x = mean(df$temp) + (sd(df$temp)), y = 0.009, xend = mean(df$temp) + (sd(df$temp)), yend = 0.011)) + #stdev end
   geom_curve(data = df, aes(x = 18, y = 0.03, xend = 22, yend = 0.01), curvature = 0.1, angle = 90, color = "black", arrow = arrow()) + #shape curve arrow
   geom_segment(aes(x = (mean(df$temp)) + 2*sd(df$temp), y = 0, xend = (mean(df$temp)) + 2*sd(df$temp), yend = 0.008)) + #95th p
-  geom_segment(aes(x = 27, y = 0.001, xend = 31, yend = 0.011)) + #ES label line
+  geom_segment(aes(x = 25, y = 0.001, xend = 31, yend = 0.011)) + #ES label line
   geom_segment(aes(x = (mean(df$temp)) + 2*sd(df$temp), y = 0.008, xend = 30, yend = 0.02)) + #95th p label line
   geom_segment(aes(x = 19.5, y = 0.02, xend = 25, yend = 0.03)) + #shape curve label line
-  geom_text(label = expression(paste("Mean ( ", mu, " )")), x = 9, y = 0.02, colour = "black") +
-  geom_text(label = expression(paste("Standard Deviation ( ", sigma, " )")), x = 14, y = 0.007, colour = "black") +
-  geom_text(label = expression(paste("Curve ( ", xi, " )")), x = 27, y = 0.03, colour = "black") +
-  geom_text(label = "Return Period", x = 33, y = 0.02, colour = "black") +
-  geom_text(label = "Expected Shortfall", x = 34, y = 0.011, colour = "black") +
+  geom_text(label = expression(paste("Mean ( ", mu, " )")), x = 9, y = 0.02, colour = "black", size = 7) +
+  geom_text(label = expression(paste("Standard Deviation ( ", sigma, " )")), x = 14, y = 0.007, colour = "black", size = 7) +
+  geom_text(label = expression(paste("Curve ( ", xi, " )")), x = 28.5, y = 0.03, colour = "black", size = 7) +
+  geom_text(label = "Return Period", x = 33, y = 0.021, colour = "black", size = 7) +
+  geom_text(label = "Expected Shortfall", x = 34, y = 0.013, colour = "black", size = 7) +
   scale_y_continuous(expand = expansion(mult = 0)) +
   xlab("Variable Maxima") +
   ylab("Frequency") +
@@ -171,11 +216,13 @@ ggplot(df, aes(x = temp)) +
   theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        panel.border = element_rect(full = "transparent", color = "black", size = 1), 
+        panel.border = element_rect(fill = "transparent", color = "black", size = 1), 
         axis.ticks.x=element_blank(),
         axis.ticks.y=element_blank(),
         axis.text.x = element_blank(),
         axis.text.y = element_blank(),
+        axis.title.x = element_text(size = 15, face = "bold"),
+        axis.title.y = element_text(size = 15, face = "bold"),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA),
         legend.position = c(0.85, 0.8))
@@ -208,7 +255,7 @@ ggplot(df, aes(x = temp, fill = scenario)) +
   theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        panel.border = element_rect(full = "transparent", color = "black", size = 1),
+        panel.border = element_rect(fill = "transparent", color = "black", size = 1),
         axis.ticks.x=element_blank(),
         axis.ticks.y=element_blank(),
         axis.text.x = element_blank(),
@@ -223,46 +270,6 @@ ggplot(df, aes(x = temp, fill = scenario)) +
         legend.position = c(0.9, 0.8))
 
 ggsave("Figures/shift_95p.png",
-       width = 9,
-       height = 7, 
-       dpi = 600)
-
-#shift in extremes diagram
-
-ggplot(df, aes(x = temp)) +
-  stat_function(fun = dnorm, args = c(mean = mean(df$temp) + 3, sd = sd(df$temp) + 2), geom = "area", fill = "#e63946", alpha = 0.6) +
-  stat_function(fun = dnorm, args = c(mean = mean(df$temp) + 3, sd = sd(df$temp) + 2), geom = "area", fill = "#e63946", xlim = c((mean(df$temp) + 3) + 2*(sd(df$temp) + 2), 40), alpha = 0.9, aes(colour = "Future")) +
-  stat_function(fun = dnorm, args = c(mean = mean(df$temp), sd = sd(df$temp)), geom = "area", fill = "#457b9d", alpha = 0.6) +
-  stat_function(fun = dnorm, args = c(mean = mean(df$temp), sd = sd(df$temp)), geom = "area", fill = "#457b9d", xlim = c((mean(df$temp)) + 2*sd(df$temp), 40), alpha = 0.9, aes(colour = "Historical")) +
-  stat_function(fun = dnorm, args = c(mean = mean(df$temp), sd = sd(df$temp))) +
-  stat_function(fun = dnorm, args = c(mean = mean(df$temp) + 3, sd = sd(df$temp) + 2)) +
-  geom_segment(aes(x = (mean(df$temp)) + 2*sd(df$temp), y = 0, xend = (mean(df$temp)) + 2*sd(df$temp), yend = 0.008)) + #95th p
-  geom_segment(aes(x = (mean(df$temp) + 3) + 2*(sd(df$temp) + 2), y = 0, xend = (mean(df$temp) + 3) + 2*(sd(df$temp) +2), yend = 0.0062)) + #95th p
-  geom_segment(aes(x = 26, y = 0.001, xend = 30, yend = 0.02)) + 
-  geom_segment(aes(x = 34, y = 0.001, xend = 30, yend = 0.02)) + 
-  geom_text(label = "Percent Change", x = 32, y = 0.0225, colour = "black", fontface = "bold", size = 5) +
-  scale_y_continuous(expand = expansion(mult = 0)) +
-  xlab("Temperature") +
-  ylab("Frequency") +
-  scale_x_continuous(expand = expansion(mult = 0), limits = c(-5, 40)) +
-  theme_bw() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        c 
-        axis.ticks.x=element_blank(),
-        axis.ticks.y=element_blank(),
-        axis.text.x = element_blank(),
-        axis.text.y = element_blank(),
-        axis.title.x = element_text(size = 15, face = "bold"),
-        axis.title.y = element_text(size = 15, face = "bold"),
-        legend.title = element_blank(), 
-        legend.text = element_text(size = 10, face = "bold"),
-        panel.background = element_rect(fill = "transparent", color = NA),
-        plot.background = element_rect(fill = "transparent", color = NA),
-        legend.background = element_rect(fill = "transparent", color = NA),
-        legend.position = c(0.85, 0.8))
-
-ggsave("Figures/shift_ES.png",
        width = 9,
        height = 7, 
        dpi = 600)
