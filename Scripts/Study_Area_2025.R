@@ -108,6 +108,7 @@ pnw <- st_transform(pnw, crs = st_crs("EPSG:4326"))
 #save product
 saveRDS(estuaries.pnw, "Data/Shapefiles/estuaries.rds")
 saveRDS(pnw, "Data/PNW_shapefile.rds")
+st_write(estuaries, "Data/estuaries.shp")
 
 #subset out estuaries for data testing---------------------------------
 
@@ -195,8 +196,8 @@ estuary.centers <- st_centroid(estuaries)
 ggplot() +
   coord_sf(datum = "ESRI:102008") +
   annotation_map_tile(type = "osm", zoomin = 0) +
-  geom_sf(data = pnw, fill = NA, color = 'black', size = 0.1) + 
-  geom_sf(data = estuary.centers, color = "#e63946", , fill = "#e63946", shape = 23, size = 0.5) + 
+  geom_sf(data = pnw, fill = "#ffb703", alpha = 0.3, color = "black", size = 0.1) + 
+  geom_sf(data = estuary.centers, color = "#e63946", fill = "#e63946", shape = 23, size = 0.5) + 
   theme_void() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
