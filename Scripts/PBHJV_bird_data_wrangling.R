@@ -1,4 +1,13 @@
-#bird data wrangling
+##'File name: PBHJV_bird_data_wrangling
+##'Author: Rekha Marcus
+##'Thesis: Chapter 2
+##'
+##'This script includes all the code used to summarize bird diversity data from 
+##'the Pacific Birds Habitat Joint Venture's eBird data dashboard 
+##'(https://conservationdecisiontools.shinyapps.io/birdsconservationtool_jv_vf/)
+##'for each of 752 estuaries in the Pacific Northwest.
+
+#load packages ----------------------------------------------------------------
 
 library(terra)
 library(sf)
@@ -6,9 +15,7 @@ library(dplyr)
 library(ggplot2)
 library(ggspatial)
 
-setwd("C:/Users/rekha/OneDrive - University of Victoria/Wetlands")
-
-#load in bird data
+#load in bird data ------------------------------------------------------------
 
 relativeabun <- rast('Data/Bird_data/PacificBirds_all-bird-groups_all-species-priority_annual_relative_abundance_annual.tif')
 relativeabun <- terra::project(relativeabun, "epsg:4269")

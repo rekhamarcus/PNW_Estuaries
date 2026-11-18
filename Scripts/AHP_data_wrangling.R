@@ -1,10 +1,16 @@
-#wrangling all data for use by AHP
+##'File name: AHP_data_wrangling
+##'Author: Rekha Marcus
+##'Thesis: Chapter 2
+##'
+##'This script is used to subset datasets to create the four datasets used for 
+##'each of the decision models created in Chapter 2 (Improving, Maintaining, 
+##'Shorebirds, and Waterfowl)
+
+#load packages ----------------------------------------------------------------
 
 library("dplyr")
 library('terra')
-library('sf') #need to be able to join sf and dataframes
-
-setwd("C:/Users/rekha/OneDrive - University of Victoria/Wetlands")
+library('sf') #spatial data wrangling
 
 #load in all data -------------------------------------------------------------
 
@@ -19,9 +25,9 @@ birds <- read.csv("Data/Bird_data/PBHJV_bird_estuary_data.csv")
 #slr data
 slr <- readRDS("SLR/Results/estuary.slr.risk.rds")
 
-#bind all data together by estuary into 4 categories ---------------------------------------------
+#bind all data together by estuary into 4 categories --------------------------
 
-# 1 - maintaining - climate min SSP 5, all birds, slr SSP 5
+# 1 - maintaining - minima from climate SSP 5, all bird data, slr SSP 5
 
 maintaining.clim <- ssp5 %>% group_by(EST_ID) %>% summarize(mean.pr = min(mean.pr),
                                                             SD.pr = min(SD.pr),
@@ -42,7 +48,7 @@ maintaining <- full_join(maintaining.clim, birds)
 maintaining <- full_join(maintaining, slr)
 maintaining <- maintaining[,c(1:15,26,27)]
 
-# 2 - improving - climate max SSP 1, all birds, max SSP 1
+# 2 - improving - maxima from climate  SSP 1, all birds, slr SSP 1
 
 improving.clim <- ssp1 %>% group_by(EST_ID) %>% summarize(mean.pr = max(mean.pr),
                                                             SD.pr = max(SD.pr),
@@ -92,12 +98,12 @@ waterfowl <- full_join(median.clim, birds)
 waterfowl <- full_join(waterfowl, slr)
 waterfowl <- waterfowl[,c(1:13,18:19,29,27)]
 
-# normalize all data ---------------------------------------
+# normalize all data ----------------------------------------------------------
 
 #range normalizing to ensure all values fall between 0 and 1
 
-#for maintaining, shorebirds, and waterfowl data, normalize cliamte and slr data by lowest value 
-#as higher values =/= better (aka non-beneficial categories)
+#for maintaining, shorebirds, and waterfowl datasets, normalize climate and slr data by lowest value 
+#as higher values =/= better, want to highlight areas of least change (refugia)
 
 #maintaining data
 
@@ -119,7 +125,9 @@ maintaining$risk5.norm[maintaining$risk5.norm == Inf] <- 1
 
 write.csv(maintaining, "Ranking/AHP/estuary_assessment_maintaining_data.csv")
 
-#for improving dataset, scale all data in the same direction (higher values = more beneficial)
+#improving data
+
+#scale all data in the same direction (higher values = more beneficial)
 for(i in 8:17){
   
   improving[,i+10] <-  improving[,i]/max(improving[,i], na.rm = TRUE) 
@@ -146,23 +154,11 @@ shorebirds$relative.abundance.norm <- shorebirds$shorebird.relative.abundance/ma
 
 #scale slr data between 0 and 1, 1 being most stable/least change - have to input actual value bc there are 0s in the data
 shorebirds$meanrisk.norm <- 0.04919284/shorebirds$meanrisk
-shorebirds$meanrisk.norm[shorebirds$meanrisk == Inf] <- 1
+shorebirds$meanrisk.norm[shorebirds$meanrisk.norm == Inf] <- 1
 
 write.csv(shorebirds, "Ranking/AHP/estuary_assessment_shorebird_data.csv")
 
 #waterfowl data
-
-for(i in 8:17){
-  
-  waterfowl[,i+10] <-  
-    (waterfowl[,i] - min(waterfowl[,i], na.rm = TRUE))/ 
-    (max(waterfowl[,i], na.rm = TRUE) - min(waterfowl[,i], na.rm = TRUE))
-  
-  names(waterfowl)[i+10] <- paste(names(waterfowl)[i], ".norm", sep = "")
-  
-}
-
-#shorebird data
 
 #scale climate data between 0 and 1, 1 being most stable/least change
 waterfowl$mean.tas.norm <- min(waterfowl$mean.tas.abs, na.rm = TRUE)/waterfowl$mean.tas.abs
@@ -178,7 +174,7 @@ waterfowl$relative.abundance.norm <- waterfowl$waterfowl.relative.abundance/max(
 
 #scale slr data between 0 and 1, 1 being most stable/least change - have to input actual value bc there are 0s in the data
 waterfowl$meanrisk.norm <- 0.04919284/waterfowl$meanrisk
-waterfowl$meanrisk.norm[waterfowl$meanrisk == Inf] <- 1
+waterfowl$meanrisk.norm[waterfowl$meanrisk.norm == Inf] <- 1
 
 write.csv(waterfowl, "Ranking/AHP/estuary_assessment_waterfowl_data.csv")
 

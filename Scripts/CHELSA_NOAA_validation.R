@@ -1,4 +1,13 @@
-#back casting for data validation
+##'File name: CHELSA_ensemble_results_figures
+##'Author: Rekha Marcus
+##'Thesis: Chapter 1
+##'
+##'This script contains the code used to compare CHELSA historical modelled data
+##'to NOAA historical observed value data on order to validate the calculation
+##'of expected shortfall in Chapter 1. This script also includes code for the associated
+##'figures in Chapter 1: Figure 4, and supplements S3 and S4.
+
+#load packages ---------------------------------------------------------------
 
 library('dplyr')
 library('terra') #for working with spatial data
@@ -10,8 +19,7 @@ library('ggplot2')
 library('ggpubr')
 library('ggspatial')
 library('multcomp') #for stats testing
-
-setwd("C:/Users/rekha/OneDrive - University of Victoria/Wetlands")
+library('boot') #for bootstrap stats testing
 
 #load in functions for analysis
 source("PNW_Estuaries/Functions/crop.estuary.R") #function to crop data files to a single estuary
@@ -23,40 +31,25 @@ colors <- c("#457b9d", "#219ebc", "#ffb703", "#fb8500")
 estuaries <- readRDS("Data/Shapefiles/estuaries.rds")
 estuaries <- st_transform(estuaries, crs = st_crs("EPSG:4326"))
 
-#pnw <- readRDS("Data/Shapefiles/PNW_shapefile.rds")
-#pnw <- st_transform(pnw, crs = st_crs("EPSG:4326"))
+#load in observed data and crop to study area
+tas.obs <- rast('Data/Temperature/air.mon.mean.nc') %>% rotate()
+tas.obs <- crop(tas.obs, pnw)
+tas.obs <- mask(tas.obs, pnw)
+saveRDS(tas.obs, 'Data/Temperature/NOAA_monthly_timeseries_historical/PNW_air_mon_mean_GHCN_CAMS.rds')
 
-##' this historical observed data was obtained from https://psl.noaa.gov/data/gridded/data.UDel_AirT_Precip.html
-##' these are 50 sq km resolution observations, and they seem to be quite inaccurate - 1900 monthly temperature in portland in june/july was
-##' 26 degrees C, but these data say it was 12 degrees C. finding other data!
-##' 
-##' https://psl.noaa.gov/data/gridded/data.ghcncams.html - GHCN_CAMS Gridded 2m Temperature (Land) for better temperature data?
-##' 
+pr.obs <- rast("Data/Precipitation/precip.mon.total.v401.nc") %>% rotate()
+pr.obs <- crop(pr.obs, pnw)
+pr.obs <- mask(pr.obs, pnw)
+saveRDS(pr.obs, 'Data/Precipitation/NOAA_monthly_timeseries_historical/PNW_precip_mon_total_v401.rds')
 
-#load in observed historical data - first wrangle and crop it to study area
-#tas.obs <- rast('Data/Temperature/air.mon.mean.v401.nc') %>% rotate()
-#tas.obs <- crop(tas.obs, pnw)
-#tas.obs <- mask(tas.obs, pnw)
-#saveRDS(tas.obs, 'Data/Temperature/NOAA_monthly_timeseries_historical/PNW_air_mon_mean_v401.rds')
-
-#try new temperature data
-#tas.obs <- rast('Data/Temperature/air.mon.mean.nc') %>% rotate()
-#tas.obs <- crop(tas.obs, pnw)
-#tas.obs <- mask(tas.obs, pnw)
-#saveRDS(tas.obs, 'Data/Temperature/NOAA_monthly_timeseries_historical/PNW_air_mon_mean_GHCN_CAMS.rds')
-
-#pr.obs <- rast("Data/Precipitation/precip.mon.total.v401.nc") %>% rotate()
-#pr.obs <- crop(pr.obs, pnw)
-#pr.obs <- mask(pr.obs, pnw)
-#saveRDS(pr.obs, 'Data/Precipitation/NOAA_monthly_timeseries_historical/PNW_precip_mon_total_v401.rds')
-
+#load in modelled data
 tas <- list.files('Data/Temperature/CHELSA_monthly_timeseries_historical', pattern = ".tif", full.names = T)
 pr <- list.files('Data/Precipitation/CHELSA_monthly_timeseries_historical', pattern = ".tif", full.names = T)
 
 tas.obs <- readRDS('Data/Temperature/NOAA_monthly_timeseries_historical/PNW_air_mon_mean_GHCN_CAMS.rds')
 pr.obs <- readRDS('Data/Precipitation/NOAA_monthly_timeseries_historical/PNW_precip_mon_total_v401.rds')
 
-#run backcast comparison ----------------------------------------------------------
+#run backcast comparison ------------------------------------------------------
 
 compare.backcast <- list()
 
@@ -256,95 +249,7 @@ saveRDS(COMPARE, "Data/Results/validation.compare.GHCN_CAMSs.rds")
 
 COMPARE <- readRDS("Data/Results/validation.compare.GHCN_CAMSs.rds")
 
-#Plots ------------------------------------------------------------------------
-
-#plot distribution of tas/pr extremes of 4 results
-
-temp.density <- ggplot(COMPARE) +
-  geom_density(aes(x = EStas.modelled.sum, color = "Modelled Summary Stats"), fill = "#023047", alpha = 0.4) +
-  geom_density(aes(x = EStas.modelled, color = "Modelled Data"), fill = "#219ebc", alpha = 0.4) +
-  geom_density(aes(x = EStas.observed.sum, color = "Observed Summary Stats"), fill = "#ffb703", alpha = 0.4) +
-  geom_density(aes(x = EStas.observed, color = "Observed Data"), fill = "#fb8500", alpha = 0.4) +
-  scale_color_manual(values = c("black", "black", "black", "black")) + 
-  scale_y_continuous(expand = expansion(mult = 0)) +
-  scale_x_continuous(expand = expansion(mult = 0)) +
-  xlab("Expected Shortfall of Temperature at 99th percentile") +
-  ylab("Density") +
-  xlim(0, 20) +
-  theme_bw() + 
-  theme(legend.position = "inside",
-        legend.position.inside = c(0.2, 0.8),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        legend.title = element_blank())
-
-pr.density <- ggplot(COMPARE) +
-  geom_density(aes(x = ESpr.modelled.sum, color = "Modelled Summary Stats"), fill = "#023047", alpha = 0.4) +
-  geom_density(aes(x = ESpr.modelled, color = "Modelled Data"), fill = "#219ebc", alpha = 0.4) +
-  geom_density(aes(x = ESpr.observed.sum, color = "Observed Summary Stats"), fill = "#ffb703", alpha = 0.4) +
-  geom_density(aes(x = ESpr.observed, color = "Observed Data"), fill = "#fb8500", alpha = 0.4) +
-  scale_color_manual(values = c("black", "black", "black", "black")) + 
-  scale_y_continuous(expand = expansion(mult = 0)) +
-  scale_x_continuous(expand = expansion(mult = 0)) +
-  xlab("Expected Shortfall of Precipitation at 99th percentile") +
-  ylab("Density") +
-  xlim(-100, 800) +
-  theme_bw() + 
-  theme(legend.position = "inside",
-        legend.position.inside = c(0.8, 0.8),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        legend.title = element_blank())
-
-ggarrange(temp.density, pr.density, ncol = 2, labels = c("a", "b"))
-
-ggsave('Figures/Results/ES.observation.validation.png',
-       width = 10,
-       height = 5,
-       dpi = 600)
-
-#plot distribution of tail shapes for all 3 approaches (extremes, modelled means, observed means)
-
-temp.tails <- ggplot(COMPARE) +
-  geom_density(aes(x = tas.shape, color = "Extreme data model"), fill = "#457b9d", alpha = 0.4) +
-  geom_density(aes(x = tas.modelled.shape, color = "Mean modelled data model"), fill = "#e63946", alpha = 0.4) +
-  geom_density(aes(x = tas.observed.shape, color = "Mean observed data model"), fill = "#ffb703", alpha = 0.4) +
-  scale_color_manual(values = c("black", "black", "black", "black")) + 
-  scale_y_continuous(expand = expansion(mult = 0)) +
-  scale_x_continuous(expand = expansion(mult = 0)) +
-  xlab("Tail Shape of Temperature Data") +
-  ylab("Density") +
-  xlim(-0.6, 0) + 
-  theme_bw() + 
-  theme(legend.position = "inside",
-        legend.position.inside = c(0.25, 0.8),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        legend.title = element_blank())
-
-pr.tails <- ggplot(COMPARE) +
-  geom_density(aes(x = pr.shape, color = "Extreme data model"), fill = "#457b9d", alpha = 0.4) +
-  geom_density(aes(x = pr.modelled.shape, color = "Mean modelled data model"), fill = "#e63946", alpha = 0.4) +
-  geom_density(aes(x = pr.observed.shape, color = "Mean observed data model"), fill = "#ffb703", alpha = 0.4) +
-  scale_color_manual(values = c("black", "black", "black", "black")) + 
-  scale_y_continuous(expand = expansion(mult = 0)) +
-  scale_x_continuous(expand = expansion(mult = 0)) +
-  xlab("Tail Shape of Precipitation Data") +
-  ylab("Density") +
-  xlim(-0.9, 0.15) + 
-  theme_bw() + 
-  theme(legend.position = "inside",
-        legend.position.inside = c(0.25, 0.8),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        legend.title = element_blank())
-
-ggarrange(temp.tails, pr.tails, ncol = 2, labels = c("a", "b"))
-
-ggsave('Figures/Results/tail.validation.png',
-       width = 10,
-       height = 5,
-       dpi = 600)
+#Figure 4 - backcast comparison -----------------------------------------------
 
 #plot residuals of each approach
 
@@ -360,11 +265,15 @@ resid.tas <- ggplot(COMPARE) +
   scale_y_continuous(expand = expansion(mult = 0)) +
   #scale_x_continuous(expand = expansion(mult = 0)) +
   scale_fill_manual(values = c("#457b9d", "#e63946")) +
-  xlab("Temperature Residuals") +
+  xlab("Temperature Residuals (C)") +
   ylab("Frequency") +
   theme_bw() + 
   theme(legend.position = "inside",
         legend.position.inside = c(0.75, 0.8),
+        axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
+        axis.title.y = element_text(size = 15, family = "sans", face = "bold"),
+        legend.text = element_text(size=10, family = "sans", face = "bold"),
+        axis.text = element_text(size = 12, family = "sans"),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         legend.title = element_blank())
@@ -380,27 +289,19 @@ resid.pr <- ggplot(COMPARE) +
   scale_y_continuous(expand = expansion(mult = 0)) +
   #scale_x_continuous(expand = expansion(mult = 0)) +
   scale_fill_manual(values = c("#457b9d", "#e63946")) +
-  xlab("Precipitation Residuals") +
+  xlab("Precipitation Residuals (mm)") +
   ylab("Frequency") +
   xlim(-500, 500) +
   theme_bw() + 
   theme(legend.position = "inside",
-        legend.position.inside = c(0.75, 0.8),
+        legend.position.inside = c(0.25, 0.8),
+        axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
+        axis.title.y = element_text(size = 15, family = "sans", face = "bold"),
+        legend.text = element_text(size=10, family = "sans", face = "bold"),
+        axis.text = element_text(size = 12, family = "sans"),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         legend.title = element_blank())
-
-ggsave('Figures/Results/precip.validation.residuals.png',
-       width = 6,
-       height = 6,
-       dpi = 600)
-
-ggarrange(temp.density, pr.density, resid.tas, resid.pr, ncol = 2, nrow = 2, labels = c("a", "b", "c", "d"))
-
-ggsave('Figures/Results/validation.residuals.png',
-       width = 11.7,
-       height = 7.8,
-       dpi = 600)
 
 #plot ES results as box plots
 
@@ -408,7 +309,7 @@ es.tas <- COMPARE[,c(2:5)]
 
 tas.m <- pivot_longer(es.tas, cols = c(1:4))
 
-variables <- c("Modelled Data", "Modelled Summary Stats", "Observed Data", "Observed Summary Stats")
+variables <- c("Modelled\nData", "Modelled\nSummary Stats", "Observed\nData", "Observed\nSummary Stats")
 
 estas.boxplot <- ggplot(tas.m, aes(fill = name, x = name, y = value)) +
   geom_boxplot() + 
@@ -417,23 +318,21 @@ estas.boxplot <- ggplot(tas.m, aes(fill = name, x = name, y = value)) +
     geom = "errorbar", color = "red", width = .3) +
   scale_fill_manual(values = colors) +
   xlab("") +
-  ylab("Expected Shortfall of Temperature at 99th Percentile") + 
+  ylab("Expected Shortfall of \nTemperature (C)") + 
   scale_x_discrete(labels = variables) + 
   theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA),
-        axis.title.x = element_text(size = 9, family = "sans", face = "bold"),
-        axis.title.y = element_text(size = 9, family = "sans", face = "bold"),
-        axis.text = element_text(size = 8, family = "sans"),
+        axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
+        axis.title.y = element_text(size = 15, family = "sans", face = "bold"),
+        axis.text = element_text(size = 12, family = "sans"),
         legend.position = "none")
 
 es.pr <- COMPARE[,c(6:9)]
 
 pr.m <- pivot_longer(es.pr, cols = c(1:4))
-
-variables <- c("Modelled Data", "Modelled Summary Stats", "Observed Data", "Observed Summary Stats")
 
 espr.boxplot <- ggplot(pr.m, aes(fill = name, x = name, y = value)) +
   geom_boxplot() + stat_summary(fun = mean, color = "red") +
@@ -441,7 +340,7 @@ espr.boxplot <- ggplot(pr.m, aes(fill = name, x = name, y = value)) +
                geom = "errorbar", color = "red", width = .3) +
   scale_fill_manual(values = colors) +
   xlab("") +
-  ylab("Expected Shortfall of Precipitation at 99th Percentile") + 
+  ylab("Expected Shortfall of \nPrecipitation (mm) ") + 
   scale_x_discrete(labels = variables) + 
   ylim(-100, 800) +
   theme_bw() +
@@ -449,9 +348,9 @@ espr.boxplot <- ggplot(pr.m, aes(fill = name, x = name, y = value)) +
         panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA),
-        axis.title.x = element_text(size = 9, family = "sans", face = "bold"),
-        axis.title.y = element_text(size = 9, family = "sans", face = "bold"),
-        axis.text = element_text(size = 8, family = "sans"),
+        axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
+        axis.title.y = element_text(size = 15, family = "sans", face = "bold"),
+        axis.text = element_text(size = 12, family = "sans"),
         legend.position = "none")
 
 ggarrange(estas.boxplot, espr.boxplot, resid.tas, resid.pr, ncol = 2, nrow = 2, labels = c("a", "b", "c", "d"))
@@ -460,6 +359,8 @@ ggsave('Figures/Results/validation.boxplot.residuals.png',
        width = 11.7,
        height = 7.8,
        dpi = 600)
+
+#Figure S3 - results where precipitation values have high residuals -----------
 
 #something weird about precip raw data, observed way higher than expected by orders of magnitude
 #find which regions these estuaries belong to, map them?
@@ -493,7 +394,7 @@ ggsave("Figures/Results/S1_weird_estuaries.png",
        dpi = 600)
 
 
-#stats testing for validation --------------------------------------------------
+#summary stats --------------------------------------------------
 
 #calculate mean of each category
 mean(COMPARE$EStas.modelled.sum, na.rm = TRUE) #12.4366
@@ -542,38 +443,6 @@ sd(COMPARE$pr.resid, na.rm = TRUE) #1098.551
 mean(COMPARE$pr.resid.sum, na.rm = TRUE) #54.6959
 sd(COMPARE$pr.resid.sum, na.rm = TRUE) #65.1269
 
-#test for independence between results of each method
-
-EStas.kw <- COMPARE[,c(1:5)]
-EStas.kw <- pivot_longer(EStas.kw, cols = c(2:5))
-
-oneway.test(value ~ name, data = EStas.kw)
-#F = 259.59, num df = 3.0, denom df = 1580.3, p-value < 2.2e-16
-
-res_aov <- aov(value ~ name, data = EStas.kw)
-glht(res_aov, linfct = mcp(name = "EStas.modelled.sum"))
-
-kruskal.test(value ~ name, data = EStas.kw)
-#Kruskal-Wallis chi-squared = 552.14, df = 3, p-value < 2.2e-16
-
-pairwise.wilcox.test(EStas.kw$value, EStas.kw$name, p.adjust.method = "BH")
-#                   EStas.modelled EStas.modelled.sum EStas.observed
-#EStas.modelled.sum 2.7e-16        -                  -             
-#  EStas.observed     < 2e-16        < 2e-16            -             
-#  EStas.observed.sum < 2e-16        < 2e-16            1.5e-05  
-
-ESpr.kw <- COMPARE[,c(1, 6:9)]
-ESpr.kw <- pivot_longer(ESpr.kw, cols = c(2:5))
-
-kruskal.test(value ~ name, data = ESpr.kw)
-#Kruskal-Wallis chi-squared = 55.681, df = 3, p-value = 4.915e-12
-
-pairwise.wilcox.test(ESpr.kw$value, ESpr.kw$name, p.adjust.method = "BH")
-#                 ESpr.modelled ESpr.modelled.sum ESpr.observed
-#ESpr.modelled.sum 5.1e-06       -                 -            
-#  ESpr.observed     0.0029        8.9e-11           -            
-#  ESpr.observed.sum 0.7669        6.7e-06           0.0029 
-
 #supplementary information 3 (weird precipitation estuaries) -------------------
 
 #something weird about precip raw data, observed way higher than expected by orders of magnitude
@@ -618,8 +487,10 @@ weird.resid.pr <- ggplot(COMPARE) +
         panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA),
-        axis.title.x = element_text(size = 9, family = "sans", face = "bold"),
-        axis.title.y = element_text(size = 9, family = "sans", face = "bold"),
+        axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
+        axis.title.y = element_text(size = 15, family = "sans", face = "bold"),
+        legend.text = element_text(size=10, family = "sans", face = "bold"),
+        axis.text = element_text(size = 12, family = "sans"),
         legend.title = element_blank())
 
 weird.espr.boxplot <- ggplot(pr.m, aes(fill = name, x = name, y = value)) +
@@ -628,7 +499,7 @@ weird.espr.boxplot <- ggplot(pr.m, aes(fill = name, x = name, y = value)) +
                geom = "errorbar", color = "red", width = .3) +
   scale_fill_manual(values = colors) +
   xlab("") +
-  ylab("Expected Shortfall of Precipitation") + 
+  ylab("Expected Shortfall") + 
   scale_x_discrete(labels = variables) + 
   #ylim(-100, 800) +
   theme_bw() +
@@ -636,9 +507,10 @@ weird.espr.boxplot <- ggplot(pr.m, aes(fill = name, x = name, y = value)) +
         panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA),
-        axis.title.x = element_text(size = 9, family = "sans", face = "bold"),
-        axis.title.y = element_text(size = 9, family = "sans", face = "bold"),
-        axis.text = element_text(size = 8, family = "sans"),
+        axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
+        axis.title.y = element_text(size = 15, family = "sans", face = "bold"),
+        legend.text = element_text(size=10, family = "sans", face = "bold"),
+        axis.text = element_text(size = 12, family = "sans"),
         legend.position = "none")
 
 a <- ggarrange(weird.espr.boxplot, weird.resid.pr, nrow = 2, labels = c("a", "b"))
@@ -649,3 +521,99 @@ ggsave("Figures/Results/S3_weird_estuaries.png",
        height = 7,
        dpi = 600)
 
+#supplementary S4 (bootstrap stats testing) ----------------------------
+
+#separate temp and precip to test datasets separately - need to separate all 4 test stats
+ESpr.kw <- COMPARE[,c(1, 6:9)]
+#ESpr.kw <- pivot_longer(ESpr.kw, cols = c(2:5))
+
+EStas.kw <- COMPARE[,c(1:5)]
+#EStas.kw <- pivot_longer(EStas.kw, cols = c(2:5))
+
+boot.tas <- data.frame(KW.test.stat = NA,
+                       p = NA)
+
+for(i in 1:100) {
+  
+  d <- EStas.kw[sample(nrow(EStas.kw), 30),] %>% pivot_longer(cols = c(2:5))
+  test <- kruskal.test(value ~ name, data = d)
+  boot.tas[i,1] <- as.numeric(test$statistic)
+  boot.tas[i,2] <- test$p.value
+  
+}
+
+#mean KW value: 23.38876, mean p value: 0.0006986924
+
+boot.pr <- data.frame(KW.test.stat = NA,
+                      p = NA)
+
+for(i in 1:100) {
+  
+  d <- ESpr.kw[sample(nrow(ESpr.kw), 30),] %>% pivot_longer(cols = c(2:5))
+  test <- kruskal.test(value ~ name, data = d)
+  boot.pr[i,1] <- test$statistic
+  boot.pr[i,2] <- test$p.value
+  
+}
+
+#mean KW value: 3.350953, mean p value: 0.4165543
+
+#generate plots
+
+temp.kw.hist <- ggplot(boot.tas) +
+  geom_histogram(aes(x = KW.test.stat), color = "black", fill = "#e63946") +
+  geom_vline(xintercept = 7.815, color = "gray") +
+  scale_y_continuous(expand = expansion(mult = 0)) +
+  xlab("Kruskal-Wallis test statistic") +
+  xlim(-5, 55) +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
+        axis.title.y = element_blank(),
+        legend.text = element_text(size=10, family = "sans", face = "bold"),
+        axis.text = element_text(size = 12, family = "sans"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+precip.kw.hist <- ggplot(boot.pr) +
+  geom_histogram(aes(x = KW.test.stat), color = "black", fill = "#457b9d") +
+  geom_vline(xintercept = 7.815, color = "gray") +
+  scale_y_continuous(expand = expansion(mult = 0)) +
+  xlab("Kruskal-Wallis test statistic") +
+  xlim(0, 10) +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
+        axis.text = element_text(size = 12, family = "sans"),
+        axis.title.y = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+temp.p.hist <- ggplot(boot.tas) +
+  geom_histogram(aes(x = p), color = "black", fill = "#e63946") +
+  scale_y_continuous(expand = expansion(mult = 0)) +
+  xlab("Kruskal-Wallis test p-value") +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
+        axis.title.y = element_blank(),
+        legend.text = element_text(size=10, family = "sans", face = "bold"),
+        axis.text = element_text(size = 12, family = "sans"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+precip.p.hist <- ggplot(boot.pr) +
+  geom_histogram(aes(x = p), color = "black", fill = "#457b9d") +
+  scale_y_continuous(expand = expansion(mult = 0)) +
+  xlab("Kruskal-Wallis test p-value") +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
+        legend.text = element_text(size=10, family = "sans", face = "bold"),
+        axis.text = element_text(size = 12, family = "sans"),
+        axis.title.y = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+ggarrange(temp.kw.hist, precip.kw.hist, temp.p.hist, precip.p.hist, labels = c("a", "b", "c", "d"))
+
+ggsave("Figures/Results/S4_KW_test_validation.png",
+       width = 9.5,
+       height = 7,
+       dpi = 600)

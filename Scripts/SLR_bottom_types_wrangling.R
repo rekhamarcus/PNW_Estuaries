@@ -1,5 +1,12 @@
-#Script to attach estuaries to their bottom types to get risk of sea level rise 
-#code written by chloe, compiled by rekha
+##'File name: SLR_bottom_types_wrangling
+##'Author: Chloe Emes
+##'Thesis: Chapter 2
+##'
+##'Script used to attach estuaries to their substrate types to find what proportion
+##'of each estuary is represented by each substrate type. This can then be used to
+##'calculate erosion risk due to sea level rise. 
+
+#load packages ----------------------------------------------------------------
 
 library(dplyr)
 library(sf)
@@ -8,9 +15,7 @@ library(tidyr)
 library(stringr)
 library(ggplot2)
 
-setwd("C:/Users/rekhamarcus/OneDrive - University of Victoria/Wetlands")
-
-#join shorezone data from all sub-regions --------------------------------------
+#Join shorezone data from all sub-regions -------------------------------------
 
 #Bring in Northern California gdb file 
 #Bring up shore types in ESI layer
@@ -91,7 +96,7 @@ PNW_ESI_rast <- rast(PNW_ESI_st)
 saveRDS(PNW_ESI_st, "PNW_ESI.rds")
 PNW_ESI_raster.rds <- saveRDS(PNW_ESI_rast, file = "PNW_ESI_rast.rds")
 
-#wrangle ESI types into individual shapefiles -----------------------------------
+#wrangle ESI types into individual shapefiles ---------------------------------
 
 #load in PNW_ESI file - compiled ESI types for each region of the study area
 PNW_ESI <- readRDS("SLR/PNW_ESI.rds")
@@ -198,96 +203,3 @@ estuary.bottom.types <- do.call(rbind, bottoms_estuaries)
 
 saveRDS(estuary.bottom.types, "SLR/estuary_bottom_types.rds")
 write.csv(estuary.bottom.types, "Data/Results/estuaries_bottom_types.csv")
-
-#outdated, only works on ESI data, missing BC historical data ------------------
-
-#For loop
-ESI_estuaries <- list()
-
-for (i in 1:nrow(estuaries)) {
-  
-  ESI.df <- data.frame(EST_ID = estuaries$EST_ID[i],
-                                      Area_HA = estuaries$Area_Ha[i],
-                                      "8A" = NA,
-                                      "8D" = NA,
-                                      "6B" = NA, 
-                                      "5" = NA,
-                                      "9A" = NA,
-                                      "3A" = NA,
-                                      "10A" = NA,
-                                      "2A" = NA,
-                                      "8B" = NA,
-                                      "8C" = NA,
-                                      "1A" = NA,
-                                      "1C" = NA,
-                                      "4" = NA,
-                                      "7" = NA,
-                                      "6A" = NA,
-                                      "10B" = NA,
-                                      "6C" = NA,
-                                      "9B" = NA, 
-                                      "1B" = NA,
-                                      "U" = NA,
-                                      "10C" = NA,
-                                      "10D" = NA)
-  
-  bbox <- st_bbox(estuaries[i,])
-  r <- rast(xmin = bbox[1], xmax = bbox[3], ymin = bbox[2], ymax = bbox[4], crs = "EPSG:4326", res = 0.01, vals = 1)
-  r <- crop(r, estuaries[i,])
-  r <- mask(r, estuaries[i,])
-  
-  #ESI.df$total.cells[i] <- 1 #ncell(r)
-  
-  #extract number of raster cells that intersect with the estuary shapefile 
-  for(j in 1:19){ #first 19 ESI geometries are linestrings which use a different process than polygons (see below for polygons)
-    
-    linestring <- st_cast(list_ESI[[j]], "LINESTRING") #fix estuary geometry
-    st_crs(linestring) <- "EPSG:4326"
-    
-    #if there is no data, skip to next esi type
-    possibleError <- tryCatch(
-      c <- crop(r, linestring),
-      error = function(e) e)
-    
-    if(inherits(possibleError, "error")) next
-    
-    #mask to only include cells touched by shapefile 
-    m <- terra::mask(c, linestring)
-    
-    ESI.df[1, j+2] <- ncell(m)
-    
-  }
-  
-  for(j in 20:length(list_ESI)){
-    
-    polygon <- st_cast(list_ESI[[j]], "POLYGON")
-    st_crs(polygon) <- "EPSG:4326"
-    
-    #if there is no data, skip to next esi type
-    possibleError <- tryCatch(
-      c <- crop(r, polygon),
-      error = function(e) e)
-    
-    if(inherits(possibleError, "error")) next
-    
-    #mask to only include cells touched by shapefile 
-    m <- terra::mask(c, polygon)
-    
-    ESI.df[1, j+2] <- ncell(m)
-    
-  }
-  
-  ESI_estuaries[[i]] <- ESI.df
-  
-  print(i)
-  
-}
-
-estuaries.esi <- do.call(rbind, ESI_estuaries)
-
-write.csv(estuaries.esi, "Data/Results/estuaries_esi_results.csv")
-
-#plots ---------------------------------------------------------------------------
-
-ggplot() +
-  geom_sf(data = PNW_SEP)

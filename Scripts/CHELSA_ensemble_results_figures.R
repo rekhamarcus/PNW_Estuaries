@@ -1,4 +1,11 @@
-#figures for results using ensemble models
+##'File name: CHELSA_ensemble_results_figures
+##'Author: Rekha Marcus
+##'Thesis: Chapter 1
+##'
+##'This script is used to generate figures 5, 6, 7, and supplements
+##'S1 and S2 of Chapter 1 of the thesis.
+
+#load packages ----------------------------------------------------------------
 
 library(dplyr)
 library(terra)
@@ -11,10 +18,9 @@ library(prettymapr)
 library(ggpubr) # for arranging plots
 library(reshape) #for melt function
 
-setwd('C:/Users/rekha/OneDrive - University of Victoria/Wetlands/')
 source("PNW_Estuaries/Functions/colors.R") #color palettes
 
-#load in data -------------------------------------------------------------------
+#load in data -----------------------------------------------------------------
 
 results <- readRDS("Data/Results/results.rds")
 
@@ -39,47 +45,9 @@ ssp.temp <- c("#fcaa67", "#b0413e")
 ssp.precip <- c("lightblue", "#0077b6")
 
 #region labels
-labels <- rev(c("North Central BC", "Haida Gwaii", "Northwest Vancouver Island", "Southwest BC", "Salish Sea", "WA, OR, Northern CA", "Central California"))
+labels <- rev(c("North Central BC", "Haida Gwaii", "Northwest\nVancouver Island", "Southwest BC", "Salish Sea", "WA, OR, Northern CA", "Central California"))
 
-#test/validate all models and check outputs ------------------------------------
-
-vars <- results[,c(4:9, 22)]
-
-df.m <- reshape2::melt(vars, id.var = "model")
-
-variables <- c("Mean precipitation", "Precipitation standard deviation", "Precipitation expected shortfall",
-            "Mean temperature", "Temperature standard deviation", "Temperature expected shortfall")
-
-ggplot(df.m, aes(fill = model, x = variable, y = value)) +
-  geom_hline(aes(yintercept = 0), colour = "gray") + 
-  geom_boxplot() + 
-  scale_fill_manual(values = colors5) +
-  xlab("Results Variable") +
-  ylab("Percent Change from Historical Mean") + 
-  scale_x_discrete(labels = variables) + 
-  theme_bw() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "transparent", color = NA),
-        plot.background = element_rect(fill = "transparent", color = NA),
-        axis.title.x = element_text(size = 9, family = "sans", face = "bold"),
-        axis.title.y = element_text(size = 9, family = "sans", face = "bold"),
-        axis.text = element_text(size = 8, family = "sans"),
-        legend.background = element_rect(fill = "transparent"),
-        legend.key.size = unit(0.7, 'cm'),
-        legend.spacing.y = unit(0.1, 'cm'),
-        legend.text = element_text(size=8, family = "sans"),
-        legend.title = element_text(size = 9, family = "sans", face = "bold"),
-        legend.position = "inside",
-        legend.position.inside = c(0.1, 0.8))
-
-ggsave("Figures/model.results.png",
-       width = 10.5,
-       height = 5,
-       dpi = 600)
-
-
-#mean results ------------------------------------------------------------------
+#Figure 5 - mean results ------------------------------------------------------
 
 #plot estuaries of interest for this variable
 
@@ -109,7 +77,7 @@ ggsave("Figures/Results/mean.estuaries.map.png",
 mean.tas.plot <- ggplot(r2041, aes(fill = SSP, x = mean.tas, y = region)) +
   geom_vline(xintercept = 0, color = "grey") +
   geom_boxplot() +
-  xlab("Percent Change in Mean Temperature") +
+  xlab("Percent Change in Mean Temperature (C)") +
   scale_y_discrete(limits = rev(c("NCM", "HG", "NWVI", "SWBC", "SS", "WONC", "CC")), labels = labels) +
   scale_fill_manual(values = ssp.temp) +
   theme_bw() +
@@ -118,21 +86,21 @@ mean.tas.plot <- ggplot(r2041, aes(fill = SSP, x = mean.tas, y = region)) +
         axis.ticks.y = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA),
-        axis.title.x = element_text(size = 9, family = "sans", face = "bold"),
+        axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
         axis.title.y = element_blank(),
-        axis.text = element_text(size = 8, family = "sans"),
+        axis.text = element_text(size = 12, family = "sans"),
         legend.key.size = unit(0.7, 'cm'),
         legend.spacing.y = unit(0.1, 'cm'),
-        legend.text = element_text(size=6, family = "sans", face = "bold"),
+        legend.text = element_text(size=10, family = "sans", face = "bold"),
         legend.position = "inside",
         legend.position.inside = c(0.9, 0.6))
 
 #change in mean pr per region
 
-mean.pr.plot <- ggplot(results, aes(fill = SSP, x = mean.pr, y = region)) +
+mean.pr.plot <- ggplot(r2041, aes(fill = SSP, x = mean.pr, y = region)) +
   geom_vline(xintercept = 0, color = "grey") +
   geom_boxplot() +
-  xlab("Percent Change in Mean Monthly Precipitation") +
+  xlab("Percent Change in Mean Monthly Precipitation (mm)") +
   scale_y_discrete(limits = rev(c("NCM", "HG", "NWVI", "SWBC", "SS", "WONC", "CC")), labels = labels) +
   scale_fill_manual(values = ssp.precip) +
   theme_bw() +
@@ -141,12 +109,12 @@ mean.pr.plot <- ggplot(results, aes(fill = SSP, x = mean.pr, y = region)) +
         axis.ticks.y = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA),
-        axis.title.x = element_text(size = 9, family = "sans", face = "bold"),
+        axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
         axis.title.y = element_blank(),
-        axis.text = element_text(size = 8, family = "sans"),
+        axis.text = element_text(size = 12, family = "sans"),
         legend.key.size = unit(0.7, 'cm'),
         legend.spacing.y = unit(0.1, 'cm'),
-        legend.text = element_text(size=6, family = "sans", face = "bold"),
+        legend.text = element_text(size=10, family = "sans", face = "bold"),
         legend.position = "inside",
         legend.position.inside = c(0.9, 0.6))
 
@@ -157,7 +125,7 @@ ggsave("Figures/Results/mean.trends.2041.png",
        height = 5,
        dpi = 600)
 
-#SD results ------------------------------------------------------------------
+#Figure 6 - variability results -----------------------------------------------
 
 SD.est <- c(1016, 2106, 3030, 181, 252, 1152)
 
@@ -184,7 +152,7 @@ ggsave("Figures/Results/SD.estuaries.map.png",
 SD.tas.plot <- ggplot(r2041, aes(fill = SSP, x = SD.tas, y = region)) +
   geom_vline(xintercept = 0, color = "grey") +
   geom_boxplot() +
-  xlab("Percent Change in Standard Deviation of Temperature") +
+  xlab("Percent Change in Standard Deviation of Temperature (C)") +
   scale_y_discrete(limits = rev(c("NCM", "HG", "NWVI", "SWBC", "SS", "WONC", "CC")), labels = labels) +
   scale_fill_manual(values = ssp.temp) +
   theme_bw() +
@@ -193,12 +161,12 @@ SD.tas.plot <- ggplot(r2041, aes(fill = SSP, x = SD.tas, y = region)) +
         axis.ticks.y = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA),
-        axis.title.x = element_text(size = 9, family = "sans", face = "bold"),
+        axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
         axis.title.y = element_blank(),
-        axis.text = element_text(size = 8, family = "sans"),
+        axis.text = element_text(size = 12, family = "sans"),
         legend.key.size = unit(0.7, 'cm'),
         legend.spacing.y = unit(0.1, 'cm'),
-        legend.text = element_text(size=6, family = "sans", face = "bold"),
+        legend.text = element_text(size=10, family = "sans", face = "bold"),
         legend.position = "inside",
         legend.position.inside = c(0.9, 0.6))
 
@@ -207,7 +175,7 @@ SD.tas.plot <- ggplot(r2041, aes(fill = SSP, x = SD.tas, y = region)) +
 SD.pr.plot <- ggplot(r2041, aes(fill = SSP, x = SD.pr, y = region)) +
   geom_vline(xintercept = 0, color = "grey") +
   geom_boxplot() +
-  xlab("Percent Change in Standard Deviation of Precipitation") +
+  xlab("Percent Change in Standard Deviation of Precipitation (mm)") +
   scale_y_discrete(limits = rev(c("NCM", "HG", "NWVI", "SWBC", "SS", "WONC", "CC")), labels = labels) +
   scale_fill_manual(values = ssp.precip) +
   theme_bw() +
@@ -216,12 +184,12 @@ SD.pr.plot <- ggplot(r2041, aes(fill = SSP, x = SD.pr, y = region)) +
         axis.ticks.y = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA),
-        axis.title.x = element_text(size = 9, family = "sans", face = "bold"),
+        axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
         axis.title.y = element_blank(),
-        axis.text = element_text(size = 8, family = "sans"),
+        axis.text = element_text(size = 12, family = "sans"),
         legend.key.size = unit(0.7, 'cm'),
         legend.spacing.y = unit(0.1, 'cm'),
-        legend.text = element_text(size=6, family = "sans", face = "bold"),
+        legend.text = element_text(size=10, family = "sans", face = "bold"),
         legend.position = "inside",
         legend.position.inside = c(0.9, 0.6))
 
@@ -234,7 +202,7 @@ ggsave("Figures/Results/SD.trends.2041.png",
          height = 5,
          dpi = 600)
 
-#ES results ------------------------------------------------------------------
+#Figure 7 - extremes results --------------------------------------------------
 
 es.est <- c(1014, 203, 172, 1152, 181)
 
@@ -262,7 +230,7 @@ ggsave("Figures/Results/es.estuaries.map.png",
 es.tas.plot <- ggplot(r2041, aes(fill = SSP, x = ES0.99.tas, y = region)) +
   geom_vline(xintercept = 0, color = "grey") +
   geom_boxplot() +
-  xlab("Percent Change in Expected Shortfall of Temperature") +
+  xlab("Percent Change in Expected Shortfall of Temperature (C)") +
   scale_y_discrete(limits = rev(c("NCM", "HG", "NWVI", "SWBC", "SS", "WONC", "CC")), labels = labels) +
   scale_fill_manual(values = ssp.temp) +
   theme_bw() +
@@ -271,21 +239,21 @@ es.tas.plot <- ggplot(r2041, aes(fill = SSP, x = ES0.99.tas, y = region)) +
         axis.ticks.y = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA),
-        axis.title.x = element_text(size = 9, family = "sans", face = "bold"),
+        axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
         axis.title.y = element_blank(),
-        axis.text = element_text(size = 8, family = "sans"),
+        axis.text = element_text(size = 12, family = "sans"),
         legend.key.size = unit(0.7, 'cm'),
         legend.spacing.y = unit(0.1, 'cm'),
-        legend.text = element_text(size=6, family = "sans", face = "bold"),
+        legend.text = element_text(size=10, family = "sans", face = "bold"),
         legend.position = "inside",
         legend.position.inside = c(0.9, 0.6))
 
 #change in ES pr per region
 
-es.pr.plot <- ggplot(results, aes(fill = SSP, x = ES0.99.pr, y = region)) +
+es.pr.plot <- ggplot(r2041, aes(fill = SSP, x = ES0.99.pr, y = region)) +
   geom_vline(xintercept = 0, color = "grey") +
   geom_boxplot() +
-  xlab("Percent Change in Expected Shortfall of Precipitation") +
+  xlab("Percent Change in Expected Shortfall of Precipitation (mm)") +
   scale_y_discrete(limits = rev(c("NCM", "HG", "NWVI", "SWBC", "SS", "WONC", "CC")), labels = labels) +
   scale_fill_manual(values = ssp.precip) +
   theme_bw() +
@@ -294,16 +262,14 @@ es.pr.plot <- ggplot(results, aes(fill = SSP, x = ES0.99.pr, y = region)) +
         axis.ticks.y = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA),
-        axis.title.x = element_text(size = 9, family = "sans", face = "bold"),
+        axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
         axis.title.y = element_blank(),
-        axis.text = element_text(size = 8, family = "sans"),
+        axis.text = element_text(size = 12, family = "sans"),
         legend.key.size = unit(0.7, 'cm'),
         legend.spacing.y = unit(0.1, 'cm'),
-        legend.text = element_text(size=6, family = "sans", face = "bold"),
+        legend.text = element_text(size=10, family = "sans", face = "bold"),
         legend.position = "inside",
         legend.position.inside = c(0.9, 0.6))
-
-#mean1 <- ggarrange(tas.years.plot, pr.years.plot, ncol = 2, labels = c("a", "b"))
 
 ggarrange(es.tas.plot, es.pr.plot, nrow = 2, labels = c("b", "c"))
 
@@ -312,7 +278,7 @@ ggsave("Figures/Results/ES.trends.2041.png",
        height = 5,
        dpi = 600)
 
-#ES 95 results --------------------------------------------------------------------
+#Supplement S1 - ES 95 results ------------------------------------------------
 
 #map results
 
@@ -342,7 +308,7 @@ ggsave("Figures/Results/es.estuaries.map.png",
 es95.tas.plot <- ggplot(r2041, aes(fill = SSP, x = ES0.95.tas, y = region)) +
   geom_vline(xintercept = 0, color = "grey") +
   geom_boxplot() +
-  xlab("Percent Change in Expected Shortfall of Temperature") +
+  xlab("Percent Change in Expected Shortfall of Temperature (C)") +
   scale_y_discrete(limits = rev(c("NCM", "HG", "NWVI", "SWBC", "SS", "WONC", "CC")), labels = labels) +
   scale_fill_manual(values = ssp.temp) +
   theme_bw() +
@@ -351,21 +317,21 @@ es95.tas.plot <- ggplot(r2041, aes(fill = SSP, x = ES0.95.tas, y = region)) +
         axis.ticks.y = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA),
-        axis.title.x = element_text(size = 9, family = "sans", face = "bold"),
+        axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
         axis.title.y = element_blank(),
-        axis.text = element_text(size = 8, family = "sans"),
+        axis.text = element_text(size = 12, family = "sans"),
         legend.key.size = unit(0.7, 'cm'),
         legend.spacing.y = unit(0.1, 'cm'),
-        legend.text = element_text(size=6, family = "sans", face = "bold"),
+        legend.text = element_text(size=10, family = "sans", face = "bold"),
         legend.position = "inside",
         legend.position.inside = c(0.9, 0.6))
 
 #change in ES pr per region
 
-es95.pr.plot <- ggplot(results, aes(fill = SSP, x = ES0.95.pr, y = region)) +
+es95.pr.plot <- ggplot(r2041, aes(fill = SSP, x = ES0.95.pr, y = region)) +
   geom_vline(xintercept = 0, color = "grey") +
   geom_boxplot() +
-  xlab("Percent Change in Expected Shortfall of Precipitation") +
+  xlab("Percent Change in Expected Shortfall of Precipitation (mm)") +
   scale_y_discrete(limits = rev(c("NCM", "HG", "NWVI", "SWBC", "SS", "WONC", "CC")), labels = labels) +
   scale_fill_manual(values = ssp.precip) +
   theme_bw() +
@@ -374,16 +340,14 @@ es95.pr.plot <- ggplot(results, aes(fill = SSP, x = ES0.95.pr, y = region)) +
         axis.ticks.y = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA),
-        axis.title.x = element_text(size = 9, family = "sans", face = "bold"),
+        axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
         axis.title.y = element_blank(),
-        axis.text = element_text(size = 8, family = "sans"),
+        axis.text = element_text(size = 12, family = "sans"),
         legend.key.size = unit(0.7, 'cm'),
         legend.spacing.y = unit(0.1, 'cm'),
-        legend.text = element_text(size=6, family = "sans", face = "bold"),
+        legend.text = element_text(size=10, family = "sans", face = "bold"),
         legend.position = "inside",
         legend.position.inside = c(0.9, 0.6))
-
-#mean1 <- ggarrange(tas.years.plot, pr.years.plot, ncol = 2, labels = c("a", "b"))
 
 ggarrange(es95.tas.plot, es95.pr.plot, nrow = 2, labels = c("b", "c"))
 
@@ -392,100 +356,39 @@ ggsave("Figures/Results/ES95.trends.2041.png",
        height = 5,
        dpi = 600)
 
+#Supplement S2 - check results by climate projection model --------------------
 
-#extra plots -----------------------------------------------------------
+vars <- results[,c(4:9, 22)]
 
-#change in mean temp per ssp/time period
+df.m <- reshape2::melt(vars, id.var = "model")
 
-var.tas <- results[,c(1,2,7)]
+variables <- c("Mean precipitation", "Precipitation\nstandard deviation", "Precipitation\nexpected shortfall",
+               "Mean temperature", "Temperature\nstandard deviation", "Temperature\nexpected shortfall")
 
-tas.years.plot <- ggplot(var.tas, aes(fill = SSP, x = years, y = mean.tas)) +
-  geom_hline(yintercept = 0, color = "gray") +
+ggplot(df.m, aes(fill = model, x = variable, y = value)) +
+  geom_hline(aes(yintercept = 0), colour = "gray") + 
   geom_boxplot() + 
-  xlab("Time period") +
+  scale_fill_manual(values = colors5) +
+  xlab("Results Variable") +
   ylab("Percent Change from Historical Mean") + 
-  scale_fill_manual(values = ssp.temp) + 
-  #scale_x_discrete(labels = variables) + 
+  scale_x_discrete(labels = variables) + 
   theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA),
-        axis.title.x = element_text(size = 9, family = "sans", face = "bold"),
-        axis.title.y = element_text(size = 9, family = "sans", face = "bold"),
-        axis.text = element_text(size = 8, family = "sans"),
+        axis.title.x = element_text(size = 15, family = "sans", face = "bold"),
+        axis.title.y = element_text(size = 15, family = "sans", face = "bold"),
+        axis.text = element_text(size = 12, family = "sans"),
         legend.background = element_rect(fill = "transparent"),
         legend.key.size = unit(0.7, 'cm'),
         legend.spacing.y = unit(0.1, 'cm'),
         legend.text = element_text(size=8, family = "sans"),
         legend.title = element_text(size = 9, family = "sans", face = "bold"),
         legend.position = "inside",
-        legend.position.inside = c(0.15, 0.85))
+        legend.position.inside = c(0.1, 0.8))
 
-#change in mean pr per ssp/time period
-
-var.pr <- results[,c(1,2,4)]
-
-pr.years.plot <- ggplot(var.pr, aes(fill = SSP, x = years, y = mean.pr)) +
-  geom_hline(yintercept = 0, color = "gray") +
-  geom_boxplot() + 
-  xlab("Time period") +
-  ylab("Percent Change from Historical Mean") + 
-  scale_fill_manual(values = ssp.precip) + 
-  #scale_x_discrete(labels = variables) + 
-  theme_bw() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "transparent", color = NA),
-        plot.background = element_rect(fill = "transparent", color = NA),
-        axis.title.x = element_text(size = 9, family = "sans", face = "bold"),
-        axis.title.y = element_text(size = 9, family = "sans", face = "bold"),
-        axis.text = element_text(size = 8, family = "sans"),
-        legend.background = element_rect(fill = "transparent"),
-        legend.key.size = unit(0.7, 'cm'),
-        legend.spacing.y = unit(0.1, 'cm'),
-        legend.text = element_text(size=8, family = "sans"),
-        legend.title = element_text(size = 9, family = "sans", face = "bold"),
-        legend.position = "inside",
-        legend.position.inside = c(0.15, 0.85))
-
-
-#calculate some specific values for results ------------------------------------
-
-#import historical data summary rasters
-
-tas <- list.files('Data/Temperature/CHELSA_climate_normals', pattern = ".tif", full.names = T) %>% rast()
-pr <- list.files('Data/Precipitation/CHELSA_climate_normals', pattern = ".tif", full.names = T) %>% rast()
-
-mean(global(tas, fun = "mean", na.rm = TRUE)$mean) #10.423
-mean(global(pr, fun = "mean", na.rm = TRUE)$mean) #173.107
-
-mean(global(tas, fun = "sd", na.rm = TRUE)$sd) #1.813
-mean(global(pr, fun = "sd", na.rm = TRUE)$sd) #79.974
-
-#crop to specific estuaries
-
-esp <- c(211, 188, 3030, 1152, 1014, 181)
-esp.est <- estuaries[estuaries$EST_ID %in% esp,]
-
-ests <- data.frame(EST_ID = NA,
-                   meantas = NA, 
-                   meanpr = NA, 
-                   sdtas = NA,
-                   sdpr = NA)
-
-for(i in 1:nrow(esp.est)){
-  
-  t <- crop(tas, esp.est[i,])
-  p <- crop(pr, esp.est[i,])
-  
-  ests[i,1] <- esp.est$EST_ID[i]
-  
-  ests[i,2] <- mean(global(t, fun = "mean", na.rm = TRUE)$mean) 
-  ests[i,3] <- mean(global(p, fun = "mean", na.rm = TRUE)$mean) 
-  
-  ests[i,4] <- mean(global(t, fun = "sd", na.rm = TRUE)$sd) 
-  ests[i,5] <- mean(global(p, fun = "sd", na.rm = TRUE)$sd) 
-  
-}
-
+ggsave("Figures/model.results.png",
+       width = 10.5,
+       height = 5,
+       dpi = 600)

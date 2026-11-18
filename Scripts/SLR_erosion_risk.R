@@ -1,4 +1,13 @@
-#SLR risk score for estuaries
+##'File name: PBHJV_bird_data_wrangling
+##'Author: Chloe Emes
+##'Thesis: Chapter 2
+##'
+##'This script contains code used to calculate a compound index of erosion risk 
+##'due to sea level rise for 752 estuaries in the Pacific Northwest. This script 
+##'should be run after the SLR_bottom_types_wrangling script to ensure correct 
+##'data loading. 
+
+#load packages ----------------------------------------------------------------
 
 library('dplyr')
 library('terra')
@@ -8,8 +17,6 @@ library('tidyterra')
 library('ggspatial')
 library('gdalUtilities')
 library('prettymapr')
-
-setwd("C:/Users/rekha/OneDrive - University of Victoria/Wetlands")
 
 #load in datasets --------------------------------------------------------------
 
@@ -89,68 +96,4 @@ RISK$risk5 <- RISK$ssl.5*RISK$vulnerability
 RISK.estuaries <- full_join(RISK, estuaries) %>% st_as_sf()
 
 saveRDS(RISK.estuaries, "SLR/Results/estuary.slr.risk.rds")
-
-#plot results ------------------------------------------------------------------
-
-RISK.centroids <- st_centroid(RISK.estuaries)
-
-#risk of erosion from sea level rise, SSP1
-
-ggplot(RISK.centroids, aes(fill = as.numeric(log(risk1)))) + 
-  annotation_map_tile(type = "hotstyle", zoomin = 1) + 
-  geom_sf(aes(colour = as.numeric(log(risk1))), shape = 23, size = 0.5) + 
-  labs(title = "Risk of erosion due to sea level rise, SSP 1") + 
-  scale_fill_gradient(low = "#457b9d", high = "#e63946", name = "log Erosion Risk") +
-  scale_colour_gradient(low = "#457b9d", high = "#e63946", name = "log Erosion Risk") +
-  theme_void() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.ticks.y=element_blank(),
-        axis.text.x = element_blank(),
-        axis.text.y = element_blank(),
-        plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
-        plot.subtitle = element_text(size = 6, face = "bold", hjust = 0.5), 
-        legend.text = element_text(size = 6, face = "bold"),
-        legend.title = element_text(size = 8, face = "bold", hjust = 0.5),
-        panel.background = element_rect(fill = "transparent", color = NA),
-        plot.background = element_rect(fill = "transparent", color = NA),
-        legend.background = element_rect(fill = "transparent", color = NA),
-        legend.position = "inside", 
-        legend.position.inside = c(0.2, 0.2))
-
-ggsave("Figures/SLR/ssp1_risk.png",
-       width = 3.05,
-       height = 7.86,
-       dpi = 600)
-
-#risk of erosion from sea level rise, SSP5
-
-ggplot(RISK.centroids, aes(fill = as.numeric(log(risk5)))) + 
-  annotation_map_tile(type = "hotstyle", zoomin = 1) + 
-  geom_sf(aes(colour = as.numeric(log(risk5))), shape = 23, size = 0.5) + 
-  labs(title = "Risk of erosion due to sea level rise, SSP 5") + 
-  scale_fill_gradient(low = "#457b9d", high = "#e63946", name = "log Erosion Risk") +
-  scale_colour_gradient(low = "#457b9d", high = "#e63946", name = "log Erosion Risk") +
-  theme_void() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.ticks.y=element_blank(),
-        axis.text.x = element_blank(),
-        axis.text.y = element_blank(),
-        plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
-        plot.subtitle = element_text(size = 6, face = "bold", hjust = 0.5), 
-        legend.text = element_text(size = 6, face = "bold"),
-        legend.title = element_text(size = 8, face = "bold", hjust = 0.5),
-        panel.background = element_rect(fill = "transparent", color = NA),
-        plot.background = element_rect(fill = "transparent", color = NA),
-        legend.background = element_rect(fill = "transparent", color = NA),
-        legend.position = "inside", 
-        legend.position.inside = c(0.2, 0.2))
-
-ggsave("Figures/SLR/ssp5_risk.png",
-       width = 3.05,
-       height = 7.86,
-       dpi = 600)
 

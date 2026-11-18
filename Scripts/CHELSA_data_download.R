@@ -1,15 +1,19 @@
-##'this script includes all code for downloading and cropping data from CHELSA
-##'(https://chelsa-climate.org/downloads/). this script downloaded historical world 
+##'##'File name: CHELSA_data_download
+##'Author: Rekha Marcus
+##'Thesis: Chapter 1
+##'
+##'This script includes all code for downloading and cropping data from CHELSA
+##'(https://chelsa-climate.org/downloads/). This script downloaded historical world 
 ##'monthly precipitation and temperature and projected world changes in temperature,
 ##'precipitation, and seasonality in these variables, then cropped it to the study 
 ##'area. due to memory constraints, these were downloaded and cropped one by one. 
 
-#load in packages
+#load in packages and data ----------------------------------------------------
 library('terra') #for spatial data
 library('dplyr')
 library('sf') #for shapefiles
 
-setwd("C:/Users/rekhamarcus/OneDrive - University of Victoria/Wetlands")
+#load in data
 
 pnw <- readRDS('Data/PNW_shapefile.rds') #study area shapefile
 pnw <- st_transform(pnw, crs = st_crs("EPSG:4326")) #reproject to be able to crop data

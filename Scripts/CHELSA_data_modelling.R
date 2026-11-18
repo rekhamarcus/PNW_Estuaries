@@ -1,4 +1,14 @@
-#modelling changes in mean and extremes for all estuaries
+##'File name: CHELSA_data_modelling
+##'Author: Rekha Marcus
+##'Thesis: Chapter 1
+##'
+##'This script summarizes changes in the mean, variability, and magnitude of extremes
+##'in temperature and precipitation, using CHELSA data across 749 estuaries in the Pacific 
+##'Northwest. This script should be run after the CHELSA_data_download script to 
+##'ensure the correct data is used. This script is meant to be run multiple times, 
+##'each time with a different climate projection model dataset. 
+
+#load packages, functions, and data -------------------------------------------
 
 library('dplyr')
 library('terra') #for working with spatial data
@@ -6,8 +16,6 @@ library('sf') #for working with spatial data
 library('extRemes') #for modelling extreme events
 library('data.table') #for matrix.futures function
 library('tidyr') #for pivot_longer function
-
-setwd("C:/Users/rekha/OneDrive - University of Victoria/Wetlands")
 
 #load in functions for analysis
 source("PNW_Estuaries/Functions/block.maxima.R") #function to extract block maxima from historical data
@@ -30,6 +38,8 @@ estuaries <- readRDS("Data/Shapefiles/estuaries.rds")
 estuaries <- st_transform(estuaries, crs = st_crs("EPSG:4326"))
 #estuary.subset <- readRDS("Data/Shapefiles/estuary_subset.rds")
 #estuary.subset <- st_transform(estuary.subset, crs = st_crs("EPSG:4326"))
+
+#run summarization & modelling for each estuary -------------------------------
 
 #set up data that will result from each forloop iteration
 
@@ -122,7 +132,7 @@ print (i)
 
 results <- do.call(rbind, RESULTS)
 
-#calculate values for entire region ---------------------------------------------
+#calculate values for entire region -------------------------------------------
 
 tas <- list.files('Data/Temperature/CHELSA_monthly_timeseries_historical', pattern = ".tif", full.names = T) %>% rast()
 tas.proj <- list.files('Data/Temperature/CHELSA_ukesm1-0-ll_projections/monthly_projections', pattern = ".tif", full.names = T) %>% rast()
@@ -143,7 +153,7 @@ prmax.extremes <- extremes.max(data = extremes, var = extremes$prmax, results = 
 tasmax.extremes <- extremes.max(data = extremes, var = extremes$tasmax, results = tas.results, var.name = "tas_max")
 
 
-#wrangle datasets for analysis --------------------------------------
+#wrangle datasets for analysis ------------------------------------------------
 
 results <- results[,c(20, 1:19)]
 
@@ -197,25 +207,4 @@ results.ukesm <- readRDS('Data/Results/Results_ukesm_model/results_ukesm.rds')
 
 results <- rbind(results.gfdl, results.ipfl, results.mpi, results.mri, results.ukesm)
 saveRDS(results, "Data/Results/results.rds")
-
-#fix incorrect year markers bruh ---------------------------------------------------
-
-results.8.5 <- results[results$SSP == "SSP5_8.5",]
-results.8.5 <- results.8.5[!results.8.5$model == "gfdl",]
-
-results.8.5$years <- paste("2", results.8.5$years, sep = "")
-results.8.5$years <- substr(results.8.5$years, 1, nchar(results.8.5$years) - 1)
-
-results.gfdl <- results[results$model == "gfdl",]
-results.else <- results[!results$SSP == "SSP5_8.5",]
-results.else <- results.else[!results.else$model == "gfdl",]
-
-results <- rbind(results.8.5, results.gfdl, results.else)
-
-results$years[results$years == "2011-2040"] <- "2011_2040"
-results$years[results$years == "2041-2070"] <- "2041_2070"
-results$years[results$years == "2071-2100"] <- "2071_2100"
-
-saveRDS(results, "Data/Results/results.rds")
-
 
